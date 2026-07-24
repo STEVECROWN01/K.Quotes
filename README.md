@@ -12,7 +12,7 @@ A standalone web app that generates pixel-perfect, branded PDF quotes ("Devis") 
 - **FR/EN language toggle** for all static text — UI labels, service descriptions, thank-you notes, conditions
 - **Bank & payment details** pre-filled with defaults, editable per quote, with "Reset to default" button
 - **Payment link rendering**: when provided, appears in the bank details section alongside bank info
-- **Save & generate invoice later**: quotes are persisted, then converted to invoices via one click (D→F swap + payment block)
+- **Save & generate invoice later**: quotes are persisted to Supabase, then converted to invoices via one click (D→F swap + payment block)
 - **My Quotes list view** with download / generate-invoice / delete actions
 - **Brand-true PDF template** matching the reference layout (ink-black `#000028` table headers, gold `#D4AF37` accents, watermark, two-page A4)
 
@@ -22,7 +22,7 @@ A standalone web app that generates pixel-perfect, branded PDF quotes ("Devis") 
 |-------|-----------|
 | Frontend | Next.js 16 (App Router) + TypeScript + Tailwind CSS 4 + shadcn/ui |
 | PDF Generation | Puppeteer (headless Chrome → PDF) — server-side API route |
-| Persistence | Prisma ORM + SQLite (default) — swappable to Supabase via env vars |
+| Persistence | **Supabase** (Postgres + RLS) — only |
 | Brand Fonts | Inter (body), Fraunces (display/headers), JetBrains Mono (quote numbers) |
 
 ## Getting Started
@@ -30,25 +30,31 @@ A standalone web app that generates pixel-perfect, branded PDF quotes ("Devis") 
 ### Prerequisites
 
 - Node.js 20+ / Bun
+- A Supabase project (free tier works)
 - (Production) A running Chromium/Chrome for Puppeteer
 
-### Install & Run
+### 1. Set up Supabase
+
+1. Create a project at [supabase.com](https://supabase.com)
+2. Open **Dashboard → SQL Editor → New Query**
+3. Paste the contents of [`supabase/schema.sql`](./supabase/schema.sql) and run it
+4. Copy your project URL and keys from **Project Settings → API**:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `SUPABASE_SERVICE_ROLE_KEY` (server-side, bypasses RLS)
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (browser-side, respects RLS)
+
+### 2. Configure env vars
+
+```bash
+cp .env.example .env.local
+# Edit .env.local and paste your Supabase values
+```
+
+### 3. Install & run
 
 ```bash
 bun install
-bun run db:push     # Initialize SQLite database
 bun run dev         # Start dev server at http://localhost:3000
-```
-
-### Environment Variables
-
-Copy `.env.example` to `.env.local` and fill in if you want to use Supabase instead of local SQLite:
-
-```bash
-DATABASE_URL=file:./db/custom.db   # Prisma datasource (default: SQLite)
-# Optional Supabase (not required for v1 — falls back to Prisma/SQLite)
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
 ## Architecture
@@ -74,24 +80,40 @@ src/
 │   ├── defaults.ts                    # Default bank details, payment link, emetteur
 │   ├── services.ts                    # Service descriptions (FR/EN), line-item builder
 │   ├── i18n.ts                        # All UI strings + date/currency/number formatters
-│   ├── storage.ts                     # Prisma CRUD (Supabase-ready abstraction)
+│   ├── supabase.ts                    # Supabase client factory
+│   ├── storage.ts                     # Quote CRUD (Supabase-only)
 │   └── pdf.ts                         # Puppeteer launcher + PDF generation
-├── prisma/schema.prisma               # Quote model
+├── supabase/
+│   └── schema.sql                     # Table definition + RLS policies + indexes
 └── public/keter-logo.png              # Transparent logo (also used as watermark)
 ```
 
 ## Deployment
 
-The app is a standard Next.js project. It can be deployed to:
+### Vercel (frontend + API routes)
 
-- **Vercel** (frontend + API routes) — works out of the box. For PDF generation on Vercel, install `@sparticuz/chromium` and update `src/lib/pdf.ts` to use it instead of bundled Puppeteer Chromium.
-- **Railway** (recommended for the PDF backend per the brief) — full Node server with Chrome pre-installed.
+1. Push this repo to GitHub
+2. Import into Vercel
+3. Add env vars: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+4. For PDF generation on Vercel serverless, install `@sparticuz/chromium` and update `src/lib/pdf.ts`:
+   ```ts
+   import chromium from "@sparticuz/chromium";
+   const browser = await puppeteer.launch({
+     args: chromium.args,
+     executablePath: await chromium.executablePath(),
+     headless: chromium.headless,
+   });
+   ```
 
-For Supabase persistence:
-1. Create a Supabase project
-2. Create a `quotes` table matching the Prisma schema
-3. Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` env vars
-4. Update `src/lib/storage.ts` to use the Supabase client instead of Prisma (data shape is identical — drop-in swap)
+### Railway (recommended for PDF backend per the brief)
+
+Railway can run a full Node server with Chrome pre-installed, avoiding the Vercel serverless Chromium dance.
+
+1. Push this repo to GitHub
+2. Create a new Railway project from the GitHub repo
+3. Add env vars (same as above)
+4. Railway auto-detects Next.js — set the start command to `bun run start` (or `npm start`)
+5. For Puppeteer on Railway, the bundled Chromium works out of the box (no extra config needed)
 
 ## Filename Convention
 

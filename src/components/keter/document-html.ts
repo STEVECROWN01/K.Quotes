@@ -169,7 +169,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     transform: translate(-50%, -50%);
     width: 70%;
     max-width: 180mm;
-    opacity: 0.05;
+    opacity: 0.08;
     pointer-events: none;
     z-index: 0;
   }

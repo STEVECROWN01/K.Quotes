@@ -31,6 +31,7 @@ export function MyQuotesDialog({
   const t = UI[language];
   const [quotes, setQuotes] = useState<QuoteRecord[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -38,12 +39,20 @@ export function MyQuotesDialog({
     let cancelled = false;
     const load = async () => {
       setLoading(true);
+      setError(null);
       try {
         const r = await fetch("/api/quotes");
         const d = await r.json();
         if (!cancelled) {
-          setQuotes(d.quotes || []);
+          if (!r.ok) {
+            setError(d.error || "Failed to load quotes");
+            setQuotes([]);
+          } else {
+            setQuotes(d.quotes || []);
+          }
         }
+      } catch (e: any) {
+        if (!cancelled) setError(e.message);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -91,6 +100,18 @@ export function MyQuotesDialog({
               <span className="text-sm">
                 {language === "fr" ? "Chargement..." : "Loading..."}
               </span>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-3 px-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-[#FEF2F2] flex items-center justify-center">
+                <X className="w-6 h-6 text-[#B91C1C]" />
+              </div>
+              <div>
+                <p className="font-serif text-base font-semibold text-[#000028] mb-1">
+                  {language === "fr" ? "Configuration requise" : "Configuration required"}
+                </p>
+                <p className="text-xs text-[#6B7280] max-w-md">{error}</p>
+              </div>
             </div>
           ) : quotes.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64 gap-4 px-6 text-center">
