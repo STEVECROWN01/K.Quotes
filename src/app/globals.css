@@ -1,0 +1,221 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-fraunces);
+  --font-mono: var(--font-jetbrains-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  /* Keter Marketing brand palette */
+  --keter-ink: #000028;          /* Ink black — primary text, headers, table header */
+  --keter-paper: #ffffff;        /* Paper white — page background */
+  --keter-gold: #D4AF37;         /* Warm gold — accent, buttons, focus */
+  --keter-gold-light: #F4E5B2;   /* Pale gold — subtle highlights */
+  --keter-gold-dark: #B8960F;    /* Deep gold — hover state */
+  --keter-slate: #6B7280;        /* Slate gray — secondary text, labels */
+  --keter-signal: #4B8A6B;       /* Muted green — success states */
+  --keter-hairline: #E5E7EB;     /* Hairline borders */
+
+  --radius: 0.25rem;             /* Crisp 2-4px corners per brief */
+  --background: #ffffff;
+  --foreground: #000028;
+  --card: #ffffff;
+  --card-foreground: #000028;
+  --popover: #ffffff;
+  --popover-foreground: #000028;
+  --primary: #000028;            /* Ink black primary */
+  --primary-foreground: #ffffff;
+  --secondary: #F9FAFB;
+  --secondary-foreground: #000028;
+  --muted: #F9FAFB;
+  --muted-foreground: #6B7280;
+  --accent: #D4AF37;             /* Gold accent */
+  --accent-foreground: #000028;
+  --destructive: #B91C1C;
+  --border: #E5E7EB;
+  --input: #F3F4F6;
+  --ring: #D4AF37;               /* Gold focus ring */
+  --chart-1: #000028;
+  --chart-2: #D4AF37;
+  --chart-3: #6B7280;
+  --chart-4: #4B8A6B;
+  --chart-5: #B8960F;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #000028;
+  --sidebar-primary: #000028;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #F9FAFB;
+  --sidebar-accent-foreground: #000028;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #D4AF37;
+}
+
+.dark {
+  --background: #000028;
+  --foreground: #ffffff;
+  --card: #0A0A35;
+  --card-foreground: #ffffff;
+  --popover: #0A0A35;
+  --popover-foreground: #ffffff;
+  --primary: #D4AF37;
+  --primary-foreground: #000028;
+  --secondary: #1A1A4A;
+  --secondary-foreground: #ffffff;
+  --muted: #1A1A4A;
+  --muted-foreground: #B8C0CC;
+  --accent: #D4AF37;
+  --accent-foreground: #000028;
+  --destructive: #F87171;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.05);
+  --ring: #D4AF37;
+  --sidebar: #0A0A35;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #D4AF37;
+  --sidebar-primary-foreground: #000028;
+  --sidebar-accent: #1A1A4A;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #D4AF37;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "ss01", "cv11";
+  }
+  /* Gold focus ring for keyboard nav */
+  *:focus-visible {
+    outline: 2px solid var(--keter-gold);
+    outline-offset: 2px;
+  }
+}
+
+/* ===== Keter-specific component classes ===== */
+@layer components {
+  /* Section card — flat, hairline border, generous padding */
+  .k-card {
+    @apply bg-white border border-[#E5E7EB] p-5 md:p-6;
+    border-radius: var(--radius);
+  }
+
+  /* Section marker — small gold uppercase label */
+  .k-section-marker {
+    @apply text-[10px] font-mono uppercase tracking-[0.2em] text-[#D4AF37];
+  }
+
+  /* Section title — serif, executive weight */
+  .k-section-title {
+    @apply font-serif text-lg md:text-xl font-semibold text-[#000028] mt-1;
+  }
+
+  /* Quote-number stamp — gold monospace, letter-spaced */
+  .k-stamp {
+    @apply font-mono font-medium text-[#D4AF37] tracking-[0.15em] uppercase;
+  }
+
+  /* Primary button — ink black, gold on hover, sharp corners */
+  .k-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-[#000028] text-white text-sm font-medium
+           hover:bg-[#D4AF37] hover:text-[#000028]
+           transition-colors duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed
+           focus-visible:outline-2 focus-visible:outline-[#D4AF37] focus-visible:outline-offset-2;
+    border-radius: var(--radius);
+  }
+
+  /* Secondary button — outlined */
+  .k-btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5
+           bg-transparent text-[#000028] text-sm font-medium
+           border border-[#000028]
+           hover:bg-[#000028] hover:text-white
+           transition-colors duration-200;
+    border-radius: var(--radius);
+  }
+
+  /* Form label — slate gray, small caps style */
+  .k-label {
+    @apply block text-[11px] font-medium uppercase tracking-wider text-[#6B7280] mb-1.5;
+  }
+
+  /* Form input — sharp corners, hairline border, generous padding */
+  .k-input {
+    @apply w-full px-3 py-2 text-sm text-[#000028]
+           bg-white border border-[#E5E7EB]
+           focus:border-[#D4AF37] focus:outline-none focus:ring-1 focus:ring-[#D4AF37]
+           transition-colors duration-150
+           placeholder:text-[#9CA3AF];
+    border-radius: var(--radius);
+  }
+
+  /* Radio card — selectable */
+  .k-radio-card {
+    @apply relative cursor-pointer px-4 py-3
+           border border-[#E5E7EB] bg-white
+           hover:border-[#D4AF37]
+           transition-all duration-150 text-sm;
+    border-radius: var(--radius);
+  }
+  .k-radio-card[data-selected="true"] {
+    @apply border-[#D4AF37] bg-[#FBF6E0];
+  }
+
+  /* Table — echoes the PDF black-header style */
+  .k-table {
+    @apply w-full text-sm;
+  }
+  .k-table thead th {
+    @apply bg-[#000028] text-white text-[11px] uppercase tracking-wider
+           font-semibold px-3 py-2.5 text-left;
+  }
+  .k-table tbody td {
+    @apply px-3 py-2.5 border-b border-[#E5E7EB] text-[#000028];
+  }
+  .k-table tbody tr:hover {
+    @apply bg-[#FAFAF9];
+  }
+}
