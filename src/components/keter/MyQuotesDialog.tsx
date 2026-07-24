@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Download, FileText, Trash2, X, Loader2, Plus } from "lucide-react";
+import { useEffect, useState, useMemo } from "react";
+import { Download, FileText, Trash2, X, Loader2, Plus, Search } from "lucide-react";
 import { UI } from "@/lib/i18n";
 import type { Language } from "@/lib/services";
 import type { QuoteRecord } from "@/lib/storage";
@@ -33,6 +33,19 @@ export function MyQuotesDialog({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Debounced search — match by quoteNumber OR fullName (case-insensitive)
+  const filteredQuotes = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return quotes;
+    return quotes.filter(
+      (quote) =>
+        quote.quoteNumber.toLowerCase().includes(q) ||
+        quote.fullName.toLowerCase().includes(q) ||
+        (quote.email ?? "").toLowerCase().includes(q)
+    );
+  }, [quotes, searchQuery]);
 
   useEffect(() => {
     if (!open) return;
@@ -92,6 +105,41 @@ export function MyQuotesDialog({
           </div>
         </div>
 
+        {/* Search bar — only shown when there are quotes and no error */}
+        {!loading && !error && quotes.length > 0 && (
+          <div className="px-5 py-3 border-b border-[#E5E7EB] bg-[#FAFAF9]">
+            <div className="relative">
+              <Search className="w-4 h-4 text-[#6B7280] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={
+                  language === "fr"
+                    ? "Rechercher par numéro, nom ou email…"
+                    : "Search by number, name or email…"
+                }
+                className="w-full pl-9 pr-3 py-2 text-sm text-[#000028] bg-white border border-[#E5E7EB] focus:border-[#D4AF37] focus:outline-none focus:ring-1 focus:ring-[#D4AF37] transition-colors"
+                style={{ borderRadius: "var(--radius)" }}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-[#6B7280] hover:text-[#000028] transition-colors"
+                  aria-label="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+            {searchQuery && (
+              <div className="mt-2 text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">
+                {filteredQuotes.length} {language === "fr" ? "résultat(s)" : "match(es)"} · {quotes.length} {language === "fr" ? "total" : "total"}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Body — table */}
         <div className="flex-1 overflow-auto">
           {loading ? (
@@ -131,6 +179,23 @@ export function MyQuotesDialog({
                 </button>
               </div>
             </div>
+          ) : filteredQuotes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-3 px-6 text-center">
+              <div className="w-14 h-14 rounded-full bg-[#F3F4F6] flex items-center justify-center">
+                <Search className="w-6 h-6 text-[#6B7280]" />
+              </div>
+              <p className="font-serif text-base text-[#000028] font-medium">
+                {language === "fr"
+                  ? "Aucun résultat pour cette recherche"
+                  : "No matches for this search"}
+              </p>
+              <button
+                onClick={() => setSearchQuery("")}
+                className="k-btn-secondary !py-2 !px-4 text-xs"
+              >
+                {language === "fr" ? "Effacer la recherche" : "Clear search"}
+              </button>
+            </div>
           ) : (
             <table className="k-table">
               <thead>
@@ -145,7 +210,7 @@ export function MyQuotesDialog({
                 </tr>
               </thead>
               <tbody>
-                {quotes.map((q) => {
+                {filteredQuotes.map((q) => {
                   // Service-aware total: only sum prices for selected services.
                   const total =
                     (q.service === "cv" || q.service === "both" ? q.priceCv || 0 : 0) +
@@ -233,7 +298,7 @@ export function MyQuotesDialog({
         {/* Footer */}
         <div className="px-5 py-3 border-t border-[#E5E7EB] bg-[#FAFAF9] flex items-center justify-between">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">
-            {quotes.length} {language === "fr" ? "devis enregistré(s)" : "saved quote(s)"}
+            {(searchQuery ? filteredQuotes.length : quotes.length)} {language === "fr" ? "devis enregistré(s)" : "saved quote(s)"}
           </span>
           <button onClick={onClose} className="k-btn-secondary !py-2 !px-4 text-xs">
             {t.cancel}

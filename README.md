@@ -14,6 +14,10 @@ A standalone web app that generates pixel-perfect, branded PDF quotes ("Devis") 
 - **Payment link rendering**: when provided, appears in the bank details section alongside bank info
 - **Save & generate invoice later**: quotes are persisted to Supabase, then converted to invoices via one click (D→F swap + payment block)
 - **My Quotes list view** with download / generate-invoice / delete actions
+- **Search/filter in My Quotes** — instant client-side search by quote number, client name, or email
+- **Dashboard** — KPI cards (quotes issued, invoices issued, revenue collected, conversion rate), 6-month bar charts for quotes and revenue, top-5 clients leaderboard
+- **Email self-BCC** (optional, opt-in per generation) — when you generate a PDF, a copy is emailed to you via Resend for archival. No client email is ever sent.
+- **Auto-save on generate** (optional, opt-in per generation) — when you generate a PDF, the quote is also saved to Supabase so it appears in My Quotes
 - **Brand-true PDF template** matching the reference layout (ink-black `#000028` table headers, gold `#D4AF37` accents, watermark, two-page A4)
 
 ## Tech Stack
@@ -23,6 +27,7 @@ A standalone web app that generates pixel-perfect, branded PDF quotes ("Devis") 
 | Frontend | Next.js 16 (App Router) + TypeScript + Tailwind CSS 4 + shadcn/ui |
 | PDF Generation | Puppeteer (headless Chrome → PDF) — server-side API route |
 | Persistence | **Supabase** (Postgres + RLS) — only |
+| Email self-BCC | Resend (optional — 100 emails/day free tier) |
 | Brand Fonts | Inter (body), Fraunces (display/headers), JetBrains Mono (quote numbers) |
 
 ## Getting Started
@@ -72,9 +77,10 @@ src/
 │       └── pdf/route.ts               # POST — Puppeteer PDF generation
 ├── components/
 │   └── keter/
-│       ├── QuoteForm.tsx              # Sections A–E form
+│       ├── QuoteForm.tsx              # Sections A–E form + generation options
 │       ├── LivePreview.tsx            # Scaled iframe rendering of document
-│       ├── MyQuotesDialog.tsx         # Saved quotes list & invoice conversion
+│       ├── MyQuotesDialog.tsx         # Saved quotes list, search, invoice conversion
+│       ├── DashboardDialog.tsx        # KPIs, monthly charts, top clients
 │       └── document-html.ts           # Pure HTML renderer (shared by preview + Puppeteer)
 ├── lib/
 │   ├── defaults.ts                    # Default bank details, payment link, emetteur
@@ -82,6 +88,7 @@ src/
 │   ├── i18n.ts                        # All UI strings + date/currency/number formatters
 │   ├── supabase.ts                    # Supabase client factory
 │   ├── storage.ts                     # Quote CRUD (Supabase-only)
+│   ├── email.ts                       # Resend self-BCC for PDF archival
 │   └── pdf.ts                         # Puppeteer launcher + PDF generation
 ├── supabase/
 │   └── schema.sql                     # Table definition + RLS policies + indexes

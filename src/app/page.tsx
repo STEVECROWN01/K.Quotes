@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { FileText, List, Sparkles, Loader2, Eye, X } from "lucide-react";
+import { FileText, List, Sparkles, Loader2, Eye, X, BarChart3 } from "lucide-react";
 import { QuoteForm, initialFormState, formStateToPayload, quoteRecordToFormState, type FormState } from "@/components/keter/QuoteForm";
 import { LivePreview } from "@/components/keter/LivePreview";
 import { MyQuotesDialog } from "@/components/keter/MyQuotesDialog";
+import { DashboardDialog } from "@/components/keter/DashboardDialog";
 import { UI, buildDocNumber } from "@/lib/i18n";
 import type { QuoteRecord } from "@/lib/storage";
 import { toast } from "sonner";
@@ -14,6 +15,7 @@ export default function Home() {
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [myQuotesOpen, setMyQuotesOpen] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
   const [mobilePreviewOpen, setMobilePreviewOpen] = useState(false);
 
   const t = UI[formState.language];
@@ -31,7 +33,11 @@ export default function Home() {
       const res = await fetch("/api/pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          emailSelfCopy: formState.emailSelfCopy,
+          saveToDb: formState.saveOnGenerate,
+        }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Unknown" }));
@@ -54,17 +60,43 @@ export default function Home() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success(
-        formState.language === "fr"
-          ? `PDF généré : ${filename}`
-          : `PDF generated: ${filename}`
-      );
+
+      // Surface email self-BCC result via toast (read from response headers)
+      const emailSent = res.headers.get("X-Email-Sent") === "1";
+      const emailError = res.headers.get("X-Email-Error");
+      if (formState.emailSelfCopy) {
+        if (emailSent) {
+          toast.success(
+            formState.language === "fr"
+              ? `PDF généré + copie envoyée par email`
+              : `PDF generated + copy emailed`
+          );
+        } else if (emailError) {
+          toast.message(
+            formState.language === "fr"
+              ? `PDF généré — email ignoré (${decodeURIComponent(emailError)})`
+              : `PDF generated — email skipped (${decodeURIComponent(emailError)})`
+          );
+        } else {
+          toast.success(
+            formState.language === "fr"
+              ? `PDF généré : ${filename}`
+              : `PDF generated: ${filename}`
+          );
+        }
+      } else {
+        toast.success(
+          formState.language === "fr"
+            ? `PDF généré : ${filename}`
+            : `PDF generated: ${filename}`
+        );
+      }
     } catch (e: any) {
       toast.error(e.message || "Failed to generate PDF");
     } finally {
       setGenerating(false);
     }
-  }, [payload, formState.language]);
+  }, [payload, formState.language, formState.emailSelfCopy, formState.saveOnGenerate]);
 
   const handleSave = useCallback(async () => {
     setSaving(true);
@@ -216,6 +248,14 @@ export default function Home() {
           </div>
           <div className="flex items-center gap-2">
             <button
+              onClick={() => setDashboardOpen(true)}
+              className="k-btn-secondary !py-2 !px-3 text-xs"
+              title={formState.language === "fr" ? "Tableau de bord" : "Dashboard"}
+            >
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">{formState.language === "fr" ? "Tableau de bord" : "Dashboard"}</span>
+            </button>
+            <button
               onClick={() => setMyQuotesOpen(true)}
               className="k-btn-secondary !py-2 !px-3 text-xs"
             >
@@ -337,6 +377,13 @@ export default function Home() {
         onGenerateInvoice={handleGenerateInvoice}
         onDownload={handleDownload}
         onDelete={handleDelete}
+      />
+
+      {/* ===== Dashboard dialog ===== */}
+      <DashboardDialog
+        open={dashboardOpen}
+        language={formState.language}
+        onClose={() => setDashboardOpen(false)}
       />
     </div>
   );

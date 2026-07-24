@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { RotateCcw, FileText, Save, Loader2, Eye } from "lucide-react";
+import { RotateCcw, FileText, Save, Loader2, Eye, Mail } from "lucide-react";
 import {
   DEFAULT_BANK_DETAILS,
   DEFAULT_PAYMENT_LINK,
@@ -32,6 +32,9 @@ export type FormState = {
   paymentLink: string;
   paymentStatus: "Payé" | "Pending";
   paymentDate: string;
+  // Optional side-effects on PDF generation
+  emailSelfCopy: boolean; // send a copy to SELF_BCC_EMAIL via Resend
+  saveOnGenerate: boolean; // also persist to Supabase when downloading PDF
 };
 
 export const initialFormState: FormState = {
@@ -56,6 +59,8 @@ export const initialFormState: FormState = {
   paymentLink: DEFAULT_PAYMENT_LINK,
   paymentStatus: "Payé",
   paymentDate: new Date().toISOString().slice(0, 10),
+  emailSelfCopy: true,
+  saveOnGenerate: true,
 };
 
 export function formStateToPayload(f: FormState): DocumentPayload {
@@ -109,6 +114,8 @@ export function quoteRecordToFormState(q: any): FormState {
     paymentLink: q.paymentLink ?? "",
     paymentStatus: q.paymentStatus ?? "Payé",
     paymentDate: q.paymentDate ?? new Date().toISOString().slice(0, 10),
+    emailSelfCopy: true,
+    saveOnGenerate: true,
   };
 }
 
@@ -584,6 +591,34 @@ export function QuoteForm({
           </div>
         </section>
       )}
+
+      {/* Generation options — email self-BCC + auto-save */}
+      <div className="k-card !py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6">
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={state.emailSelfCopy}
+            onChange={(e) => update("emailSelfCopy", e.target.checked)}
+            className="w-4 h-4 accent-[#D4AF37] cursor-pointer"
+          />
+          <Mail className="w-3.5 h-3.5 text-[#6B7280]" />
+          <span className="text-xs text-[#000028] font-medium">
+            {state.language === "fr" ? "M'envoyer une copie par email" : "Email me a copy"}
+          </span>
+        </label>
+        <label className="flex items-center gap-2.5 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={state.saveOnGenerate}
+            onChange={(e) => update("saveOnGenerate", e.target.checked)}
+            className="w-4 h-4 accent-[#D4AF37] cursor-pointer"
+          />
+          <Save className="w-3.5 h-3.5 text-[#6B7280]" />
+          <span className="text-xs text-[#000028] font-medium">
+            {state.language === "fr" ? "Sauvegarder dans Mes devis" : "Save to My Quotes"}
+          </span>
+        </label>
+      </div>
 
       {/* Action buttons */}
       <div className="flex flex-col sm:flex-row gap-3 pt-2">
