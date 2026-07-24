@@ -4,18 +4,73 @@
 import puppeteer, { type Browser } from "puppeteer";
 import { renderDocumentHtml, type DocumentPayload } from "@/components/keter/document-html";
 import type { QuoteRecord } from "@/lib/storage";
+import fs from "fs";
+import path from "path";
 
 let browserInstance: Browser | null = null;
 
+// Find the Puppeteer-bundled Chrome executable. On Railway/production, the
+// postinstall hook downloads Chrome into node_modules/.cache/puppeteer.
+function findChromeExecutable(): string | undefined {
+  // 1. PUPPETEER_EXECUTABLE_PATH env var (set by Railway if needed)
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+    return process.env.PUPPETEER_EXECUTABLE_PATH;
+  }
+
+  // 2. Look in the puppeteer cache directory
+  try {
+    const cacheDir = path.join(process.cwd(), "node_modules", ".cache", "puppeteer");
+    if (fs.existsSync(cacheDir)) {
+      const versions = fs.readdirSync(cacheDir);
+      for (const v of versions) {
+        const chromeDir = path.join(cacheDir, v, "chrome-linux64");
+        if (fs.existsSync(chromeDir)) {
+          const exe = path.join(chromeDir, "chrome");
+          if (fs.existsSync(exe)) return exe;
+        }
+        // Fallback: chrome-linx (older layout)
+        const altDir = path.join(cacheDir, v, "chrome-linux");
+        if (fs.existsSync(altDir)) {
+          const exe = path.join(altDir, "chrome");
+          if (fs.existsSync(exe)) return exe;
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("[pdf] Could not find Puppeteer Chrome in cache:", e);
+  }
+
+  // 3. System chrome (some environments install it globally)
+  for (const sysPath of [
+    "/usr/bin/google-chrome",
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/usr/bin/google-chrome-stable",
+  ]) {
+    if (fs.existsSync(sysPath)) return sysPath;
+  }
+
+  // 4. Let Puppeteer use its default (works in dev with bundled Chromium)
+  return undefined;
+}
+
 async function getBrowser(): Promise<Browser> {
   if (browserInstance && browserInstance.connected) return browserInstance;
+
+  const executablePath = findChromeExecutable();
+  console.log("[pdf] Launching browser. executablePath:", executablePath || "(puppeteer default)");
+
   browserInstance = await puppeteer.launch({
     headless: true,
+    executablePath,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
       "--disable-gpu",
+      "--disable-software-rasterizer",
+      "--single-process",
+      "--no-zygote",
     ],
   });
   return browserInstance;
