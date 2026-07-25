@@ -207,7 +207,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .doc-header-left { display: flex; flex-direction: column; }
   .doc-title {
     font-size: 26pt;
-    font-weight: 700;
+    font-weight: 800;
     color: #000000;
     line-height: 1.1;
     letter-spacing: -0.5px;
@@ -220,7 +220,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 400;
   }
   .doc-header-right { display: flex; align-items: flex-start; }
-  .doc-logo { width: 22mm; height: auto; }
+  .doc-logo { width: 18mm; height: auto; }
 
   .hr { border: 0; border-top: 1px solid #d1d5db; margin: 3mm 0; }
 
@@ -252,7 +252,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .party-block .party-row .val {
     color: #000000;
-    font-weight: 600;
+    font-weight: 500;
   }
   .party-block .party-row.val-only .val { font-weight: 500; }
   .party-subtext {
@@ -341,7 +341,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     line-height: 1.25;
   }
   .service-bullets li::before {
-    content: "\\25A0";
+    content: "■";
     color: #000000;
     position: absolute;
     left: 0;
@@ -461,30 +461,36 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .bank-block { margin-top: 4mm; }
   .bank-row {
+    display: flex;
     font-size: 10.5pt;
-    padding: 4px 0;
+    padding: 3px 0;
     line-height: 1.5;
   }
-  .bank-row .lbl { color: #6b7280; font-weight: 500; }
+  .bank-row .lbl {
+    color: #6b7280;
+    font-weight: 500;
+    min-width: 50mm;
+  }
   .bank-row .val {
     color: #000000;
-    font-weight: 600;
+    font-weight: 400;
     font-variant-numeric: tabular-nums;
   }
   .payment-link-row {
-    margin-top: 4px;
-    padding: 4px 0;
+    display: flex;
+    margin-top: 3px;
+    padding: 3px 0;
     font-size: 10.5pt;
     line-height: 1.5;
   }
   .payment-link-row .lbl {
     color: #6b7280;
     font-weight: 500;
-    margin-right: 4px;
+    min-width: 50mm;
   }
   .payment-link-row .val {
     color: #000000;
-    font-weight: 600;
+    font-weight: 400;
     word-break: break-all;
   }
 
@@ -499,7 +505,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     line-height: 1.5;
   }
   .conditions-list li::before {
-    content: "\\25A0";
+    content: "■";
     color: #000000;
     position: absolute;
     left: 0;
