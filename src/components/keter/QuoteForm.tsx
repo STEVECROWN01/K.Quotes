@@ -40,7 +40,7 @@ export type FormState = {
 export const initialFormState: FormState = {
   docType: "devis",
   language: "fr",
-  clientNumber: "26",
+  clientNumber: "",
   date: new Date().toISOString().slice(0, 10),
   fullName: "",
   city: "",
@@ -159,7 +159,7 @@ export function QuoteForm({
   };
 
   const clientNum = parseInt(state.clientNumber, 10) || 0;
-  const docNumber = buildDocNumber(clientNum, state.docType);
+  const docNumber = clientNum > 0 ? buildDocNumber(clientNum, state.docType) : `${state.docType === "devis" ? "D" : "F"}—`;
   const isInvoice = state.docType === "facture";
 
   return (
@@ -257,15 +257,25 @@ export function QuoteForm({
               className="k-input"
               value={state.clientNumber}
               onChange={(e) => update("clientNumber", e.target.value)}
-              placeholder="26"
+              placeholder={state.language === "fr" ? "Ex: 2600004" : "e.g. 2600004"}
             />
             <p className="text-[10px] text-[#6B7280] mt-1 font-mono">
-              → {isInvoice ? t.invoiceNumber : t.quoteNumber}:{" "}
-              <span className="text-[#D4AF37] font-semibold">
-                {isInvoice
-                  ? quoteToInvoiceNumber(docNumber)
-                  : docNumber}
-              </span>
+              {clientNum > 0 ? (
+                <>
+                  → {isInvoice ? t.invoiceNumber : t.quoteNumber}:{" "}
+                  <span className="text-[#D4AF37] font-semibold">
+                    {isInvoice
+                      ? quoteToInvoiceNumber(docNumber)
+                      : docNumber}
+                  </span>
+                </>
+              ) : (
+                <span className="italic">
+                  {state.language === "fr"
+                    ? "Entrez un numéro client pour générer le n° de devis"
+                    : "Enter a client number to generate the quote number"}
+                </span>
+              )}
             </p>
           </div>
           <div>
