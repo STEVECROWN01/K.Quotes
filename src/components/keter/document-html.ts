@@ -101,21 +101,41 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   const thankYouPrefix = THANK_YOU_PREFIX[lang];
   const conditions = GENERAL_CONDITIONS[lang];
 
-  // Emetteur/Destinataire
-  const emetteurRows = [
-    [lang === "fr" ? "Nom" : "Name", EMETTEUR.name],
-    ["", EMETTEUR.address],
-    ["", EMETTEUR.registration],
-    ["", EMETTEUR.country],
-    ["", EMETTEUR.signatory],
-  ];
-  const destinataireRows = [
-    [t.fullName, p.fullName || "—"],
-    [t.city, p.city || "—"],
-    [t.country, p.country || "—"],
-    [t.phone, p.phone || "—"],
-    [t.email, p.email || "—"],
-  ];
+  // Emetteur/Destinataire — label-value pairs matching the reference PDF
+  const emetteurRows = lang === "fr"
+    ? [
+        ["Société :", EMETTEUR.societe],
+        ["IFU :", EMETTEUR.ifu],
+        ["RCCM :", EMETTEUR.rccm],
+        ["Votre contact :", EMETTEUR.contact],
+        ["Adresse :", EMETTEUR.adresse],
+        ["Pays :", EMETTEUR.pays],
+      ]
+    : [
+        ["Company :", EMETTEUR.societe],
+        ["TIN :", EMETTEUR.ifu],
+        ["RCCM :", EMETTEUR.rccm],
+        ["Your contact :", EMETTEUR.contact],
+        ["Address :", EMETTEUR.adresse],
+        ["Country :", EMETTEUR.pays],
+      ];
+  const emetteurSubText = EMETTEUR.subText;
+
+  const destinataireRows = lang === "fr"
+    ? [
+        ["Nom :", p.fullName || "—"],
+        ["Ville :", p.city || "—"],
+        ["Pays :", p.country || "—"],
+        ["Téléphone :", p.phone || "—"],
+        ["Email :", p.email || "—"],
+      ]
+    : [
+        ["Name :", p.fullName || "—"],
+        ["City :", p.city || "—"],
+        ["Country :", p.country || "—"],
+        ["Phone :", p.phone || "—"],
+        ["Email :", p.email || "—"],
+      ];
 
   // Build invoice-only payment block (for facture)
   const invoicePaymentBlock =
@@ -161,15 +181,15 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .page:last-child { page-break-after: auto; }
 
-  /* ---- Watermark (large, centered, very low opacity) ---- */
+  /* ---- Watermark (very faint, barely visible — matches reference) ---- */
   .watermark {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 70%;
-    max-width: 180mm;
-    opacity: 0.08;
+    width: 60%;
+    max-width: 150mm;
+    opacity: 0.03;
     pointer-events: none;
     z-index: 0;
   }
@@ -200,7 +220,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 400;
   }
   .doc-header-right { display: flex; align-items: flex-start; }
-  .doc-logo { width: 34mm; height: auto; }
+  .doc-logo { width: 22mm; height: auto; }
 
   .hr { border: 0; border-top: 1px solid #d1d5db; margin: 3mm 0; }
 
@@ -227,7 +247,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .party-block .party-row .lbl {
     color: #6b7280;
-    min-width: 24mm;
+    min-width: 28mm;
     font-weight: 400;
   }
   .party-block .party-row .val {
@@ -235,6 +255,14 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 600;
   }
   .party-block .party-row.val-only .val { font-weight: 500; }
+  .party-subtext {
+    font-size: 9pt;
+    color: #9ca3af;
+    font-style: italic;
+    margin: 0 0 2px 0;
+    padding-left: 28mm;
+    line-height: 1.3;
+  }
 
   /* ---- Thank-you block ---- */
   .thank-you { margin: 1mm 0 3mm 0; }
@@ -266,7 +294,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     table-layout: fixed;
   }
   .services-table thead th {
-    background: #000028;
+    background: #000000;
     color: #ffffff;
     font-size: 10pt;
     font-weight: 600;
@@ -314,7 +342,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .service-bullets li::before {
     content: "\\25A0";
-    color: #000028;
+    color: #000000;
     position: absolute;
     left: 0;
     top: 0;
@@ -330,7 +358,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
 
   /* TOTAL row */
   .services-table tfoot td {
-    background: #000028;
+    background: #000000;
     color: #ffffff;
     padding: 8px 10px;
     font-weight: 700;
@@ -342,7 +370,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
-  .services-table tfoot td.total-spacer { background: #000028; }
+  .services-table tfoot td.total-spacer { background: #000000; }
 
   /* ---- Conditions / signature block ---- */
   .conditions-block {
@@ -419,8 +447,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-size: 8.5pt;
     color: #6b7280;
   }
-  .doc-footer .footer-left .line-1 { font-weight: 600; color: #374151; }
-  .doc-footer .footer-left .line-2 { color: #6b7280; }
+  .doc-footer .footer-left .line-1 { font-weight: 400; color: #6b7280; }
+  .doc-footer .footer-left .line-2 { color: #9ca3af; }
 
   /* ---- Page 2: bank + conditions ---- */
   .section-heading {
@@ -433,12 +461,9 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .bank-block { margin-top: 4mm; }
   .bank-row {
-    display: grid;
-    grid-template-columns: 50mm 1fr;
-    gap: 8mm;
     font-size: 10.5pt;
-    padding: 5px 0;
-    border-bottom: 1px solid #f3f4f6;
+    padding: 4px 0;
+    line-height: 1.5;
   }
   .bank-row .lbl { color: #6b7280; font-weight: 500; }
   .bank-row .val {
@@ -447,19 +472,18 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-variant-numeric: tabular-nums;
   }
   .payment-link-row {
-    margin-top: 6px;
-    padding: 8px 0;
+    margin-top: 4px;
+    padding: 4px 0;
     font-size: 10.5pt;
-    border-top: 1px solid #e5e7eb;
-    border-bottom: 1px solid #e5e7eb;
+    line-height: 1.5;
   }
   .payment-link-row .lbl {
     color: #6b7280;
     font-weight: 500;
-    margin-right: 8px;
+    margin-right: 4px;
   }
   .payment-link-row .val {
-    color: #000028;
+    color: #000000;
     font-weight: 600;
     word-break: break-all;
   }
@@ -476,7 +500,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .conditions-list li::before {
     content: "\\25A0";
-    color: #000028;
+    color: #000000;
     position: absolute;
     left: 0;
     top: 0;
@@ -508,10 +532,11 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       <div class="party-block">
         <div class="party-label">${t.emetteur}</div>
         ${emetteurRows
-          .map(
-            (r) =>
-              `<div class="party-row ${r[0] === "" ? "val-only" : ""}"><span class="lbl">${r[0]}</span><span class="val">${r[1]}</span></div>`
-          )
+          .map((r, i) => {
+            // After "Société" row, add the sub-text "(Pôle d'activité de YEHI OR TECH)"
+            const subText = i === 0 ? `<div class="party-subtext">${emetteurSubText}</div>` : "";
+            return `<div class="party-row"><span class="lbl">${r[0]}</span><span class="val">${r[1]}</span></div>${subText}`;
+          })
           .join("")}
       </div>
       <div class="party-block">
@@ -615,15 +640,15 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     <div class="section-heading">${t.bankHeading}</div>
 
     <div class="bank-block">
-      <div class="bank-row"><span class="lbl">${t.titulaireCompte}</span><span class="val">${p.accountHolder}</span></div>
-      <div class="bank-row"><span class="lbl">${t.iban}</span><span class="val">${p.iban}</span></div>
-      <div class="bank-row"><span class="lbl">${t.bic}</span><span class="val">${p.bic}</span></div>
-      <div class="bank-row"><span class="lbl">${t.bank}</span><span class="val">${p.bank}</span></div>
-      <div class="bank-row"><span class="lbl">${t.modePaiement}</span><span class="val">${p.paymentMode}</span></div>
-      <div class="bank-row"><span class="lbl">${t.paymentConditions}</span><span class="val">${p.paymentConditions}</span></div>
+      <div class="bank-row"><span class="lbl">${t.titulaireCompte} :</span> <span class="val">${p.accountHolder}</span></div>
+      <div class="bank-row"><span class="lbl">${t.iban} :</span> <span class="val">${p.iban}</span></div>
+      <div class="bank-row"><span class="lbl">${t.bic} :</span> <span class="val">${p.bic}</span></div>
+      <div class="bank-row"><span class="lbl">${t.bank} :</span> <span class="val">${p.bank}</span></div>
+      <div class="bank-row"><span class="lbl">${t.modePaiement} :</span> <span class="val">${p.paymentMode}</span></div>
+      <div class="bank-row"><span class="lbl">${t.paymentConditions} :</span> <span class="val">${p.paymentConditions}</span></div>
       ${
         p.paymentLink
-          ? `<div class="payment-link-row"><span class="lbl">${t.paymentLinkLabel} :</span><span class="val">${p.paymentLink}</span></div>`
+          ? `<div class="payment-link-row"><span class="lbl">${t.paymentLinkLabel} :</span> <span class="val">${p.paymentLink}</span></div>`
           : ""
       }
     </div>

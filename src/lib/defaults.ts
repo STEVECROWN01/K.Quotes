@@ -14,11 +14,15 @@ export const DEFAULT_PAYMENT_LINK =
   "https://shefapro.mymaketou.store/products/cv-premium-optimisation-linkedin-profil-qui-attire-les-recruteurs/checkout";
 
 // Emetteur (issuer) — static Keter Marketing info shown on every document.
+// Matches the reference PDF exactly.
 export const EMETTEUR = {
-  name: "Keter Marketing",
-  address: "Parakou, Borgou, Bénin",
-  registration: "RB/PKO/23 A 18020", // RCCM / business reg
-  country: "Bénin",
+  societe: "Keter Marketing",
+  subText: "(Pôle d'activité de YEHI OR TECH)",
+  ifu: "0202212825543",
+  rccm: "RB/PKO/23 A 18020",
+  contact: "Stevens AKPOVI",
+  adresse: "Parakou, Borgou, Bénin",
+  pays: "Bénin",
   signatory: "Stevens AKPOVI",
 } as const;
 
