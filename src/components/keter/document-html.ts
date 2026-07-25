@@ -174,7 +174,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     position: relative;
     width: 210mm;
     height: 297mm;
-    padding: 14mm 16mm 12mm 16mm;
+    padding: 16mm 16mm 10mm 16mm;
     background: #ffffff;
     page-break-after: always;
     overflow: hidden;
@@ -201,8 +201,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .doc-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 3mm;
+    align-items: center;
+    margin-bottom: 2mm;
   }
   .doc-header-left { display: flex; flex-direction: column; }
   .doc-title {
@@ -222,60 +222,60 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .doc-header-right { display: flex; align-items: flex-start; }
   .doc-logo { width: 18mm; height: auto; }
 
-  .hr { border: 0; border-top: 1px solid #d1d5db; margin: 3mm 0; }
+  .hr { border: 0; border-top: 1px solid #d1d5db; margin: 2mm 0; }
 
   /* ---- Emetteur / Destinataire ---- */
   .parties {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8mm;
-    margin: 2mm 0;
+    margin: 1mm 0;
   }
   .party-block .party-label {
     font-size: 9pt;
     color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 3px;
-    font-weight: 500;
+    margin-bottom: 2px;
+    font-weight: 600;
   }
   .party-block .party-row {
     display: flex;
     font-size: 10pt;
-    line-height: 1.4;
+    line-height: 1.6;
     margin-bottom: 0;
   }
   .party-block .party-row .lbl {
-    color: #6b7280;
-    min-width: 28mm;
-    font-weight: 400;
+    color: #000000;
+    min-width: 30mm;
+    font-weight: 600;
   }
   .party-block .party-row .val {
     color: #000000;
-    font-weight: 500;
+    font-weight: 400;
   }
   .party-block .party-row.val-only .val { font-weight: 500; }
   .party-subtext {
     font-size: 9pt;
     color: #9ca3af;
     font-style: italic;
-    margin: 0 0 2px 0;
-    padding-left: 28mm;
-    line-height: 1.3;
+    margin: 0 0 1px 0;
+    padding-left: 30mm;
+    line-height: 1.4;
   }
 
   /* ---- Thank-you block ---- */
-  .thank-you { margin: 4mm 0 5mm 0; }
+  .thank-you { margin: 3mm 0 4mm 0; }
   .thank-you-prefix {
     font-weight: 700;
     font-size: 11pt;
     color: #000000;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
   }
   .thank-you-body {
     font-size: 10pt;
     color: #1f2937;
-    line-height: 1.45;
+    line-height: 1.4;
     max-width: 100%;
   }
 
@@ -284,7 +284,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-size: 13pt;
     font-weight: 700;
     color: #000000;
-    margin: 1mm 0 2mm 0;
+    margin: 0 0 2mm 0;
   }
 
   /* ---- Services table ---- */
@@ -296,11 +296,11 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .services-table thead th {
     background: #000000;
     color: #ffffff;
-    font-size: 10pt;
+    font-size: 9.5pt;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding: 8px 10px;
+    padding: 6px 8px;
     text-align: left;
     border-right: 1px solid #333333;
   }
@@ -309,14 +309,15 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .services-table thead th.center { text-align: center; }
 
   .services-table tbody td {
-    padding: 5px 7px;
+    padding: 6px 8px;
     vertical-align: top;
     border-bottom: 1px solid #e5e7eb;
     border-right: 1px solid #e5e7eb;
     font-size: 9pt;
-    line-height: 1.3;
+    line-height: 1.35;
     color: #1f2937;
   }
+  .services-table tbody td:last-child { border-right: none; }
   .services-table tbody td.type-cell {
     font-weight: 600;
     color: #000000;
@@ -363,7 +364,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .services-table tfoot td {
     background: #000000;
     color: #ffffff;
-    padding: 8px 10px;
+    padding: 7px 8px;
     font-weight: 700;
     font-size: 10.5pt;
     text-transform: uppercase;
@@ -380,7 +381,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8mm;
-    margin-top: 3mm;
+    margin-top: 6mm;
   }
   .cb-left .cb-title, .cb-right .cb-title {
     font-size: 10.5pt;
@@ -390,12 +391,12 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .cb-left .cb-row {
     font-size: 9pt;
-    margin-bottom: 2px;
-    line-height: 1.3;
+    margin-bottom: 1px;
+    line-height: 1.5;
     color: #1f2937;
   }
-  .cb-left .cb-row .lbl { color: #6b7280; font-weight: 500; }
-  .cb-left .cb-row .val { color: #000000; font-weight: 600; }
+  .cb-left .cb-row .lbl { color: #000000; font-weight: 600; }
+  .cb-left .cb-row .val { color: #000000; font-weight: 400; }
   .cb-right {
     padding-left: 4mm;
     border-left: 1px solid #e5e7eb;
