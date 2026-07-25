@@ -277,7 +277,7 @@ export default function Home() {
 
       {/* ===== Main 2-column layout ===== */}
       <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 md:px-8 py-6 md:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_1fr] gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-6 lg:gap-8">
           {/* Left — form */}
           <div className="space-y-5">
             <div className="flex items-baseline justify-between">

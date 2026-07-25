@@ -159,7 +159,10 @@ export function QuoteForm({
   };
 
   const clientNum = parseInt(state.clientNumber, 10) || 0;
-  const docNumber = clientNum > 0 ? buildDocNumber(clientNum, state.docType) : `${state.docType === "devis" ? "D" : "F"}—`;
+  const year2 = new Date().getFullYear().toString().slice(-2);
+  const docNumber = clientNum > 0
+    ? buildDocNumber(clientNum, state.docType)
+    : `${state.docType === "devis" ? "D" : "F"}${year2}XXXXX`;
   const isInvoice = state.docType === "facture";
 
   return (
@@ -257,7 +260,7 @@ export function QuoteForm({
               className="k-input"
               value={state.clientNumber}
               onChange={(e) => update("clientNumber", e.target.value)}
-              placeholder={state.language === "fr" ? "Ex: 2600004" : "e.g. 2600004"}
+              placeholder={state.language === "fr" ? "Ex: 1, 26, 104…" : "e.g. 1, 26, 104…"}
             />
             <p className="text-[10px] text-[#6B7280] mt-1 font-mono">
               {clientNum > 0 ? (
@@ -272,8 +275,8 @@ export function QuoteForm({
               ) : (
                 <span className="italic">
                   {state.language === "fr"
-                    ? "Entrez un numéro client pour générer le n° de devis"
-                    : "Enter a client number to generate the quote number"}
+                    ? `Entrez le n° client → ${state.docType === "devis" ? "D" : "F"}${year2}XXXXX`
+                    : `Enter client # → ${state.docType === "devis" ? "D" : "F"}${year2}XXXXX`}
                 </span>
               )}
             </p>

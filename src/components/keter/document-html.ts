@@ -220,7 +220,22 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 400;
   }
   .doc-header-right { display: flex; align-items: flex-start; }
-  .doc-logo { width: 18mm; height: auto; }
+  .doc-logo { width: 16mm; height: auto; }
+  .doc-logo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1mm;
+  }
+  .doc-logo-wordmark {
+    font-family: 'Inter', sans-serif;
+    font-size: 8pt;
+    font-weight: 600;
+    color: #000000;
+    letter-spacing: 0.5px;
+    text-align: center;
+    line-height: 1;
+  }
 
   .hr { border: 0; border-top: 1px solid #d1d5db; margin: 2mm 0; }
 
@@ -265,7 +280,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
 
   /* ---- Thank-you block ---- */
-  .thank-you { margin: 3mm 0 4mm 0; }
+  .thank-you { margin: 8mm 0 6mm 0; }
   .thank-you-prefix {
     font-weight: 700;
     font-size: 11pt;
@@ -284,7 +299,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-size: 13pt;
     font-weight: 700;
     color: #000000;
-    margin: 0 0 2mm 0;
+    margin: 6mm 0 3mm 0;
   }
 
   /* ---- Services table ---- */
@@ -381,7 +396,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8mm;
-    margin-top: 6mm;
+    margin-top: 10mm;
   }
   .cb-left .cb-title, .cb-right .cb-title {
     font-size: 10.5pt;
@@ -532,7 +547,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         <div class="doc-date">${dateLabel}</div>
       </div>
       <div class="doc-header-right">
-        <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
+        <div class="doc-logo-container">
+          <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
+          <div class="doc-logo-wordmark">Keter Marketing</div>
+        </div>
       </div>
     </div>
 
@@ -658,7 +676,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       <div class="bank-row"><span class="lbl">${t.paymentConditions} :</span> <span class="val">${p.paymentConditions}</span></div>
       ${
         p.paymentLink
-          ? `<div class="payment-link-row"><span class="lbl">${t.paymentLinkLabel} :</span> <span class="val">${p.paymentLink}</span></div>`
+          ? `<div class="payment-link-row"><span class="lbl">${t.paymentLinkLabel} :</span> <a class="val" href="${p.paymentLink}" target="_blank" rel="noopener noreferrer" style="color:#000000;font-weight:400;text-decoration:underline;word-break:break-all;">${p.paymentLink}</a></div>`
           : ""
       }
     </div>

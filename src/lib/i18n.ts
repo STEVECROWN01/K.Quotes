@@ -306,12 +306,14 @@ export function formatCurrency(amount: number, lang: Language): string {
   return lang === "fr" ? `${formatted} €` : `€${formatted}`;
 }
 
-// Build the doc number: "D" + client# zero-padded to 5 digits (e.g. D2600004)
+// Build the doc number: "D" + 2-digit year + 5-digit client number zero-padded
+// Example: client 1 in 2026 → D2600001
+// Example: client 26 in 2026 → D2600026
+// Example: client 2600004 in 2026 → D2600004 (client number uses all digits, year is always 2 digits)
 export function buildDocNumber(clientNumber: number, docType: DocType): string {
-  const padded = String(clientNumber).padStart(5, "0").slice(-5).padStart(5, "0");
-  // If client number > 5 digits, use the full number padded to at least 5
-  const fullNum = String(clientNumber).padStart(5, "0");
-  return `${docType === "devis" ? "D" : "F"}${fullNum}`;
+  const year = new Date().getFullYear().toString().slice(-2); // e.g. "26" for 2026
+  const padded = String(clientNumber).padStart(5, "0");
+  return `${docType === "devis" ? "D" : "F"}${year}${padded}`;
 }
 
 // Convert quote number → invoice number (D→F swap, same digits)
