@@ -265,7 +265,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
 
   /* ---- Thank-you block ---- */
-  .thank-you { margin: 1mm 0 3mm 0; }
+  .thank-you { margin: 4mm 0 5mm 0; }
   .thank-you-prefix {
     font-weight: 700;
     font-size: 11pt;
@@ -318,12 +318,12 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 600;
     color: #000000;
     font-size: 9pt;
-    width: 9%;
+    width: 8%;
   }
-  .services-table tbody td.desc-cell { width: 56%; }
-  .services-table tbody td.price-cell { width: 13%; text-align: right; font-variant-numeric: tabular-nums; }
+  .services-table tbody td.desc-cell { width: 60%; }
+  .services-table tbody td.price-cell { width: 12%; text-align: right; font-variant-numeric: tabular-nums; }
   .services-table tbody td.qty-cell { width: 8%; text-align: center; }
-  .services-table tbody td.total-cell { width: 14%; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .services-table tbody td.total-cell { width: 12%; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
 
   .service-name {
     font-weight: 700;
@@ -568,11 +568,11 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     <table class="services-table">
       <thead>
         <tr>
-          <th style="width: 9%">${t.thType}</th>
-          <th style="width: 56%">${t.thDescription}</th>
-          <th class="num" style="width: 13%">${t.thUnitPrice}</th>
+          <th style="width: 8%">${t.thType}</th>
+          <th style="width: 60%">${t.thDescription}</th>
+          <th class="num" style="width: 12%">${t.thUnitPrice}</th>
           <th class="center" style="width: 8%">${t.thQty}</th>
-          <th class="num" style="width: 14%">${t.thTotal}</th>
+          <th class="num" style="width: 12%">${t.thTotal}</th>
         </tr>
       </thead>
       <tbody>
