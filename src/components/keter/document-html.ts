@@ -470,8 +470,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     line-height: 1.5;
   }
   .bank-row .lbl {
-    color: #6b7280;
-    font-weight: 500;
+    color: #000000;
+    font-weight: 600;
     min-width: 50mm;
   }
   .bank-row .val {
@@ -487,8 +487,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     line-height: 1.5;
   }
   .payment-link-row .lbl {
-    color: #6b7280;
-    font-weight: 500;
+    color: #000000;
+    font-weight: 600;
     min-width: 50mm;
   }
   .payment-link-row .val {
