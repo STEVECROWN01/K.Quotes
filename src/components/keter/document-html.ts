@@ -302,7 +302,9 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     letter-spacing: 0.5px;
     padding: 8px 10px;
     text-align: left;
+    border-right: 1px solid #333333;
   }
+  .services-table thead th:last-child { border-right: none; }
   .services-table thead th.num { text-align: right; }
   .services-table thead th.center { text-align: center; }
 
@@ -310,6 +312,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     padding: 5px 7px;
     vertical-align: top;
     border-bottom: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
     font-size: 9pt;
     line-height: 1.3;
     color: #1f2937;
@@ -334,7 +337,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .service-bullets { margin: 0 0 3px 0; padding: 0; list-style: none; }
   .service-bullets li {
     position: relative;
-    padding-left: 12px;
+    padding-left: 10px;
     margin-bottom: 0;
     font-size: 8.5pt;
     color: #374151;
@@ -447,8 +450,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-size: 8.5pt;
     color: #6b7280;
   }
-  .doc-footer .footer-left .line-1 { font-weight: 400; color: #6b7280; }
-  .doc-footer .footer-left .line-2 { color: #9ca3af; }
+  .doc-footer .footer-left .line-1 { font-weight: 400; color: #9ca3af; }
+  .doc-footer .footer-left .line-2 { color: #bcbcbc; }
 
   /* ---- Page 2: bank + conditions ---- */
   .section-heading {
