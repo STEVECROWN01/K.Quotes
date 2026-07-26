@@ -54,7 +54,7 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
 
       {/* Preview area — TWO SEPARATE page containers with visible gray gap between them */}
       <div className="flex-1 overflow-auto bg-[#F3F4F6] p-4 md:p-6">
-        <div className="flex flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-2">
           {/* PAGE 1 — its own white sheet with shadow */}
           <div
             style={{
