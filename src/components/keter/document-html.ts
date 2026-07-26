@@ -39,6 +39,7 @@ export type DocumentPayload = {
   service: ServiceType;
   priceCv: number | null;
   priceLinkedin: number | null;
+  cvQuantity?: number; // number of CVs (1, 2, 3, 4+ for multiple domains)
   accountHolder: string;
   iban: string;
   bic: string;
@@ -91,9 +92,11 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     p.service,
     p.priceCv ?? 0,
     p.priceLinkedin ?? 0,
-    lang
+    lang,
+    p.cvQuantity ?? 1
   );
   const grandTotal = items.reduce((sum, it) => sum + it.total, 0);
+  const totalQuantity = items.reduce((sum, it) => sum + it.quantity, 0);
 
   const dateLabel = formatDate(p.date, lang);
   const paymentDateLabel = p.paymentDate ? formatDate(p.paymentDate, lang) : "";
@@ -225,17 +228,19 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1mm;
+    gap: 0.5mm;
   }
   .doc-logo-wordmark {
     font-family: 'Inter', sans-serif;
-    font-size: 8pt;
-    font-weight: 600;
-    color: #000000;
-    letter-spacing: 0.5px;
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 0.3px;
     text-align: center;
     line-height: 1;
+    white-space: nowrap;
   }
+  .doc-logo-wordmark .wm-keter { color: #D4AF37; }
+  .doc-logo-wordmark .wm-marketing { color: #000000; }
 
   .hr { border: 0; border-top: 1px solid #d1d5db; margin: 2mm 0; }
 
@@ -339,10 +344,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-size: 9pt;
     width: 8%;
   }
-  .services-table tbody td.desc-cell { width: 60%; }
-  .services-table tbody td.price-cell { width: 12%; text-align: right; font-variant-numeric: tabular-nums; }
-  .services-table tbody td.qty-cell { width: 8%; text-align: center; }
-  .services-table tbody td.total-cell { width: 12%; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .services-table tbody td.desc-cell { width: 44%; }
+  .services-table tbody td.price-cell { width: 18%; text-align: right; font-variant-numeric: tabular-nums; }
+  .services-table tbody td.qty-cell { width: 12%; text-align: center; }
+  .services-table tbody td.total-cell { width: 18%; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   .service-name {
     font-weight: 700;
@@ -388,15 +393,22 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .services-table tfoot td.total-amount {
     text-align: right;
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
   }
   .services-table tfoot td.total-spacer { background: #000000; }
+  .services-table tfoot td.total-qty {
+    text-align: center;
+    background: #000000;
+    color: #ffffff;
+    font-weight: 700;
+  }
 
   /* ---- Conditions / signature block ---- */
   .conditions-block {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8mm;
-    margin-top: 10mm;
+    margin-top: 14mm;
   }
   .cb-left .cb-title, .cb-right .cb-title {
     font-size: 10.5pt;
@@ -416,8 +428,16 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     padding-left: 4mm;
     border-left: 1px solid #e5e7eb;
   }
+  .cb-right .cb-title {
+    margin-bottom: 8mm;
+  }
+  .cb-right .cb-date-line {
+    font-size: 9pt;
+    color: #6b7280;
+    margin-bottom: 20mm;
+  }
   .signature-line {
-    margin-top: 6mm;
+    margin-top: 0;
     border-top: 1px solid #000000;
     padding-top: 3px;
     font-size: 8.5pt;
@@ -513,6 +533,21 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     word-break: break-all;
   }
 
+  .payment-link-section {
+    margin-top: 12mm;
+  }
+  .payment-link-block {
+    margin-top: 3mm;
+    padding: 4mm 0;
+  }
+  .payment-link-url {
+    color: #2563eb;
+    font-weight: 500;
+    text-decoration: underline;
+    word-break: break-all;
+    font-size: 10.5pt;
+  }
+
   .conditions-section { margin-top: 14mm; }
   .conditions-list { margin: 4mm 0 0 0; padding: 0; list-style: none; }
   .conditions-list li {
@@ -549,7 +584,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       <div class="doc-header-right">
         <div class="doc-logo-container">
           <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
-          <div class="doc-logo-wordmark">Keter Marketing</div>
+          <div class="doc-logo-wordmark"><span class="wm-keter">Keter</span> <span class="wm-marketing">Marketing</span></div>
         </div>
       </div>
     </div>
@@ -591,10 +626,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       <thead>
         <tr>
           <th style="width: 8%">${t.thType}</th>
-          <th style="width: 60%">${t.thDescription}</th>
-          <th class="num" style="width: 12%">${t.thUnitPrice}</th>
-          <th class="center" style="width: 8%">${t.thQty}</th>
-          <th class="num" style="width: 12%">${t.thTotal}</th>
+          <th style="width: 44%">${t.thDescription}</th>
+          <th class="num" style="width: 18%">${t.thUnitPrice}</th>
+          <th class="center" style="width: 12%">${t.thQty}</th>
+          <th class="num" style="width: 18%">${t.thTotal}</th>
         </tr>
       </thead>
       <tbody>
@@ -621,7 +656,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         <tr>
           <td colspan="2" class="total-spacer">TOTAL</td>
           <td class="total-spacer"></td>
-          <td class="total-spacer"></td>
+          <td class="total-qty">${totalQuantity}</td>
           <td class="total-amount">${formatCurrency(grandTotal, lang)}</td>
         </tr>
       </tfoot>
@@ -639,7 +674,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       </div>
       <div class="cb-right">
         <div class="cb-title">${t.bonPourAccord}</div>
-        <div class="cb-row" style="font-size:9.5pt;color:#6b7280;">${lang === "fr" ? "À _________________________ , le ____ / ____ / ______" : "At _________________________ , on ____ / ____ / ______"}</div>
+        <div class="cb-date-line">${lang === "fr" ? "À _________________________ , le ____ / ____ / ______" : "At _________________________ , on ____ / ____ / ______"}</div>
         <div class="signature-line">
           <div class="sig-label">${t.signatureCachet}</div>
           <div class="sig-quality">${t.qualiteSignataire}</div>
@@ -674,12 +709,18 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       <div class="bank-row"><span class="lbl">${t.bank} :</span> <span class="val">${p.bank}</span></div>
       <div class="bank-row"><span class="lbl">${t.modePaiement} :</span> <span class="val">${p.paymentMode}</span></div>
       <div class="bank-row"><span class="lbl">${t.paymentConditions} :</span> <span class="val">${p.paymentConditions}</span></div>
-      ${
-        p.paymentLink
-          ? `<div class="payment-link-row"><span class="lbl">${t.paymentLinkLabel} :</span> <a class="val" href="${p.paymentLink}" target="_blank" rel="noopener noreferrer" style="color:#000000;font-weight:400;text-decoration:underline;word-break:break-all;">${p.paymentLink}</a></div>`
-          : ""
-      }
     </div>
+
+    ${
+      p.paymentLink
+        ? `<div class="payment-link-section">
+             <div class="section-heading">${lang === "fr" ? "Lien de paiement en ligne" : "Online payment link"}</div>
+             <div class="payment-link-block">
+               <a class="payment-link-url" href="${p.paymentLink}" target="_blank" rel="noopener noreferrer">${p.paymentLink}</a>
+             </div>
+           </div>`
+        : ""
+    }
 
     <div class="conditions-section">
       <div class="section-heading">${t.conditionsHeading}</div>

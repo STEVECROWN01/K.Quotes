@@ -115,6 +115,7 @@ export default function Home() {
         service: payload.service,
         priceCv: payload.priceCv,
         priceLinkedin: payload.priceLinkedin,
+        cvQuantity: payload.cvQuantity,
         accountHolder: payload.accountHolder,
         iban: payload.iban,
         bic: payload.bic,

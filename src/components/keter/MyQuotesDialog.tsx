@@ -213,7 +213,7 @@ export function MyQuotesDialog({
                 {filteredQuotes.map((q) => {
                   // Service-aware total: only sum prices for selected services.
                   const total =
-                    (q.service === "cv" || q.service === "both" ? q.priceCv || 0 : 0) +
+                    (q.service === "cv" || q.service === "both" ? (q.priceCv || 0) * (q.cvQuantity || 1) : 0) +
                     (q.service === "linkedin" || q.service === "both" ? q.priceLinkedin || 0 : 0);
                   return (
                     <tr

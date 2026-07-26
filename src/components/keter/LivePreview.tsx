@@ -29,9 +29,9 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
       <div className="flex-1 overflow-auto bg-[#F3F4F6] p-4 md:p-6">
         <div
           style={{
-            // A4 = 210mm × 297mm. We render at scale 0.55 on desktop, smaller on mobile.
+            // A4 = 210mm × 297mm. Render at scale 0.75 on desktop for readability.
             // The container fits 2 pages stacked.
-            transform: "scale(0.55)",
+            transform: "scale(0.75)",
             transformOrigin: "top center",
             width: "210mm",
             height: "594mm", // 2 × 297mm

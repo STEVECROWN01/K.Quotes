@@ -63,7 +63,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
     const paidInvoices = factures.filter((q) => q.paymentStatus === "Payé");
 
     const computeTotal = (q: QuoteRecord) =>
-      (q.service === "cv" || q.service === "both" ? q.priceCv || 0 : 0) +
+      (q.service === "cv" || q.service === "both" ? (q.priceCv || 0) * (q.cvQuantity || 1) : 0) +
       (q.service === "linkedin" || q.service === "both" ? q.priceLinkedin || 0 : 0);
 
     const totalRevenue = paidInvoices.reduce((sum, q) => sum + computeTotal(q), 0);

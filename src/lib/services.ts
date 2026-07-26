@@ -109,14 +109,16 @@ export const GENERAL_CONDITIONS: Record<Language, string[]> = {
   ],
 };
 
-// Build line items: 1 for cv-only or linkedin-only, 2 for combo (each qty 1, own price).
+// Build line items: 1 for cv-only or linkedin-only, 2 for combo.
+// CV quantity is configurable (1, 2, 3, 4+ for multiple CVs in different domains).
+// LinkedIn quantity is always 1.
 export type LineItem = {
   serviceKey: "cv" | "linkedin";
   name: string;
   bullets: string[];
   deliveryNote: string;
   unitPrice: number;
-  quantity: 1;
+  quantity: number;
   total: number;
 };
 
@@ -124,10 +126,12 @@ export function buildLineItems(
   service: ServiceType,
   priceCv: number,
   priceLinkedin: number,
-  lang: Language
+  lang: Language,
+  cvQuantity: number = 1
 ): LineItem[] {
   const dict = SERVICE_DESCRIPTIONS[lang];
   const items: LineItem[] = [];
+  const cvQty = Math.max(1, cvQuantity);
   if (service === "cv" || service === "both") {
     items.push({
       serviceKey: "cv",
@@ -135,8 +139,8 @@ export function buildLineItems(
       bullets: dict.cv.bullets,
       deliveryNote: dict.cv.deliveryNote,
       unitPrice: priceCv,
-      quantity: 1,
-      total: priceCv,
+      quantity: cvQty,
+      total: priceCv * cvQty,
     });
   }
   if (service === "linkedin" || service === "both") {

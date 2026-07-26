@@ -18,6 +18,7 @@ create table if not exists public.quotes (
   service             text not null check (service in ('cv', 'linkedin', 'both')),
   price_cv            numeric(10, 2),
   price_linkedin      numeric(10, 2),
+  cv_quantity         integer default 1,
   account_holder      text not null,
   iban                text not null,
   bic                 text not null,
@@ -82,6 +83,7 @@ create policy "Anyone can delete quotes"
 
 -- ============ Helpful view: quote totals ============
 -- Convenience view that pre-computes the total per quote (service-aware).
+-- CV total = price_cv * cv_quantity (if cv or both), LinkedIn total = price_linkedin (if linkedin or both).
 create or replace view public.quote_totals as
 select
   id,
@@ -92,7 +94,7 @@ select
   language,
   service,
   status,
-  (case when service in ('cv', 'both')     then coalesce(price_cv, 0)       else 0 end
+  (case when service in ('cv', 'both')     then coalesce(price_cv, 0) * coalesce(cv_quantity, 1) else 0 end
  + case when service in ('linkedin', 'both') then coalesce(price_linkedin, 0) else 0 end) as total,
   created_at
 from public.quotes
@@ -101,7 +103,7 @@ order by created_at desc;
 -- ============ Sample data (optional — comment out if not needed) ============
 -- insert into public.quotes (
 --   quote_number, doc_type, language, client_number, date, full_name,
---   city, country, phone, email, service, price_cv, price_linkedin,
+--   city, country, phone, email, service, price_cv, price_linkedin, cv_quantity,
 --   account_holder, iban, bic, bank, payment_mode, payment_conditions,
 --   payment_link, status
 -- ) values (

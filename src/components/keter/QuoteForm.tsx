@@ -23,6 +23,7 @@ export type FormState = {
   service: ServiceType;
   priceCv: string;
   priceLinkedin: string;
+  cvQuantity: string; // number of CVs (1, 2, 3, 4+ for different domains)
   accountHolder: string;
   iban: string;
   bic: string;
@@ -50,6 +51,7 @@ export const initialFormState: FormState = {
   service: "cv",
   priceCv: "120",
   priceLinkedin: "120",
+  cvQuantity: "1",
   accountHolder: DEFAULT_BANK_DETAILS.accountHolder,
   iban: DEFAULT_BANK_DETAILS.iban,
   bic: DEFAULT_BANK_DETAILS.bic,
@@ -78,6 +80,7 @@ export function formStateToPayload(f: FormState): DocumentPayload {
     service: f.service,
     priceCv: f.priceCv ? parseFloat(f.priceCv) : null,
     priceLinkedin: f.priceLinkedin ? parseFloat(f.priceLinkedin) : null,
+    cvQuantity: parseInt(f.cvQuantity, 10) || 1,
     accountHolder: f.accountHolder,
     iban: f.iban,
     bic: f.bic,
@@ -105,6 +108,7 @@ export function quoteRecordToFormState(q: any): FormState {
     service: q.service,
     priceCv: q.priceCv != null ? String(q.priceCv) : "",
     priceLinkedin: q.priceLinkedin != null ? String(q.priceLinkedin) : "",
+    cvQuantity: q.cvQuantity != null ? String(q.cvQuantity) : "1",
     accountHolder: q.accountHolder,
     iban: q.iban,
     bic: q.bic,
@@ -303,7 +307,7 @@ export function QuoteForm({
               className="k-input"
               value={state.fullName}
               onChange={(e) => update("fullName", e.target.value)}
-              placeholder={state.language === "fr" ? "Eric De Lavarene" : "Jane Doe"}
+              placeholder={state.language === "fr" ? "Jean Dupont" : "John Doe"}
             />
           </div>
           <div>
@@ -316,7 +320,7 @@ export function QuoteForm({
               className="k-input"
               value={state.city}
               onChange={(e) => update("city", e.target.value)}
-              placeholder="Agia Paraskevi"
+              placeholder="Paris"
             />
           </div>
           <div>
@@ -329,7 +333,7 @@ export function QuoteForm({
               className="k-input"
               value={state.country}
               onChange={(e) => update("country", e.target.value)}
-              placeholder="Gréce"
+              placeholder="France"
             />
           </div>
           <div>
@@ -342,7 +346,7 @@ export function QuoteForm({
               className="k-input"
               value={state.phone}
               onChange={(e) => update("phone", e.target.value)}
-              placeholder="+33626488904"
+              placeholder="+33 1 23 45 67 89"
             />
           </div>
           <div>
@@ -355,7 +359,7 @@ export function QuoteForm({
               className="k-input"
               value={state.email}
               onChange={(e) => update("email", e.target.value)}
-              placeholder="eric2lavarene@gmail.com"
+              placeholder="jean.dupont@email.com"
             />
           </div>
         </div>
@@ -400,8 +404,8 @@ export function QuoteForm({
           <div
             className={
               state.service === "both"
-                ? "grid grid-cols-1 md:grid-cols-2 gap-4"
-                : "grid grid-cols-1 gap-4"
+                ? "grid grid-cols-1 md:grid-cols-3 gap-4"
+                : "grid grid-cols-1 md:grid-cols-2 gap-4"
             }
           >
             {(state.service === "cv" || state.service === "both") && (
@@ -437,6 +441,29 @@ export function QuoteForm({
                   onChange={(e) => update("priceLinkedin", e.target.value)}
                   placeholder="120.00"
                 />
+              </div>
+            )}
+            {(state.service === "cv" || state.service === "both") && (
+              <div>
+                <label className="k-label" htmlFor="cvQuantity">
+                  {state.language === "fr" ? "Nombre de CV" : "Number of CVs"}
+                </label>
+                <input
+                  id="cvQuantity"
+                  type="number"
+                  min={1}
+                  max={20}
+                  step={1}
+                  className="k-input"
+                  value={state.cvQuantity}
+                  onChange={(e) => update("cvQuantity", e.target.value)}
+                  placeholder="1"
+                />
+                <p className="text-[10px] text-[#6B7280] mt-1 italic">
+                  {state.language === "fr"
+                    ? "Pour plusieurs CV (domaines différents)"
+                    : "For multiple CVs (different domains)"}
+                </p>
               </div>
             )}
           </div>
