@@ -15,12 +15,19 @@ import { renderDocumentHtml, type DocumentPayload } from "./document-html";
 export function LivePreview({ payload }: { payload: DocumentPayload }) {
   const html = useMemo(() => {
     const full = renderDocumentHtml(payload);
-    // Inject CSS to add a visual gap between the two pages in the iframe
+    // Inject CSS to add a VISUAL GAP between the two pages in the iframe
     // and hide the iframe's own scrollbar
     const extraCss = `
       <style>
-        /* Add gap between page 1 and page 2 for preview display */
-        .page:first-child { margin-bottom: 8mm !important; }
+        /* Add visible gap between page 1 and page 2 for preview display */
+        .page:first-child {
+          margin-bottom: 15mm !important;
+          border-bottom: none;
+        }
+        /* Add a subtle shadow/gap visual */
+        .page:last-child {
+          margin-top: 0 !important;
+        }
         /* Hide scrollbar inside iframe */
         ::-webkit-scrollbar { display: none; }
         body { -ms-overflow-style: none; scrollbar-width: none; }
@@ -51,8 +58,8 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
             transform: "scale(0.80)",
             transformOrigin: "top center",
             width: "210mm",
-            // 2 pages + gap: 297mm + 8mm + 297mm = 602mm
-            height: "602mm",
+            // 2 pages + gap: 297mm + 15mm + 297mm = 609mm
+            height: "609mm",
             margin: "0 auto",
             boxShadow: "0 4px 24px rgba(0,0,40,0.12)",
           }}
@@ -64,7 +71,7 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
             scrolling="no"
             style={{
               width: "210mm",
-              height: "602mm",
+              height: "609mm",
               border: "none",
               display: "block",
               background: "white",
