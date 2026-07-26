@@ -313,6 +313,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
+    border: 1px solid #000000;
   }
   .services-table thead th {
     background: #000000;
@@ -328,6 +329,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .services-table thead th:last-child { border-right: none; }
   .services-table thead th.num { text-align: right; }
   .services-table thead th.center { text-align: center; }
+  .services-table thead th:first-child { text-align: center; }
 
   .services-table tbody td {
     padding: 6px 8px;
@@ -338,12 +340,13 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     line-height: 1.35;
     color: #1f2937;
   }
-  .services-table tbody td:last-child { border-right: none; }
+  .services-table tbody td:last-child { border-right: 1px solid #e5e7eb; }
   .services-table tbody td.type-cell {
     font-weight: 600;
     color: #000000;
     font-size: 9pt;
     width: 7%;
+    text-align: center;
   }
   .services-table tbody td.desc-cell { width: 52%; }
   .services-table tbody td.price-cell { width: 18%; text-align: right; font-variant-numeric: tabular-nums; }
