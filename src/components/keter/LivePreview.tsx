@@ -18,21 +18,28 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
   const { page1Html, page2Html } = useMemo(() => {
     const full = renderDocumentHtml(payload);
 
+    // Extract the <head> (styles) to reuse in both pages
+    const headMatch = full.match(/<head>[\s\S]*?<\/head>/);
+    const head = headMatch ? headMatch[0] : "";
+
     // Split at the "PAGE 2" comment marker
     const splitMarker = "<!-- ============ PAGE 2 ============ -->";
     const parts = full.split(splitMarker);
+    // parts[0] = everything before the marker (includes <head>, <body>, and page 1 div)
+    // parts[1] = everything after the marker (includes page 2 div + closing tags)
 
-    // Page 1: everything before the PAGE 2 marker, close the html tags
-    const page1Html =
-      parts[0]
-        .replace(/<div class="page">[\s\S]*$/, "") // remove the page-2 div start if any
-        .replace(/<\/body>[\s\S]*<\/html>\s*$/, "") + // remove closing tags if present
-      "</body></html>";
+    // Page 1: take parts[0], extract just the body content (the page 1 div),
+    // and wrap it in a fresh HTML doc with the same <head>
+    const body1Match = parts[0].match(/<body>([\s\S]*)$/);
+    const body1Content = body1Match ? body1Match[1] : parts[0];
+    const page1Html = `<!DOCTYPE html><html lang="${payload.language}">${head}<body>${body1Content}</body></html>`;
 
-    // Page 2: build a complete HTML doc with the same <head> (styles) + only page 2 content
-    const headMatch = full.match(/<head>[\s\S]*?<\/head>/);
-    const head = headMatch ? headMatch[0] : "";
-    const page2Html = `<!DOCTYPE html><html lang="${payload.language}">${head}<body>${splitMarker}${parts[1] || ""}</body></html>`;
+    // Page 2: take parts[1], extract just the body content (the page 2 div),
+    // and wrap it in a fresh HTML doc with the same <head>
+    const body2Content = parts[1] || "";
+    // Remove the closing </body></html> if present (we'll add our own)
+    const body2Clean = body2Content.replace(/<\/body>\s*<\/html>\s*$/, "");
+    const page2Html = `<!DOCTYPE html><html lang="${payload.language}">${head}<body>${body2Clean}</body></html>`;
 
     return { page1Html, page2Html };
   }, [payload]);
