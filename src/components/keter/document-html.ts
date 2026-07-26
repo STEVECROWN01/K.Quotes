@@ -224,7 +224,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 400;
   }
   .doc-header-right { display: flex; align-items: flex-start; }
-  .doc-logo { width: 16mm; height: auto; }
+  .doc-logo { width: 14mm; height: auto; }
   .doc-logo-container {
     display: flex;
     flex-direction: column;
@@ -233,7 +233,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .doc-logo-wordmark {
     font-family: 'Inter', sans-serif;
-    font-size: 8.5pt;
+    font-size: 8pt;
     font-weight: 700;
     letter-spacing: 0.3px;
     text-align: center;
@@ -438,7 +438,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     margin-bottom: 10mm;
   }
   .signature-line {
-    margin-top: 0;
+    margin-top: 14mm;
     border-top: 1px solid #000000;
     padding-top: 3px;
     font-size: 8.5pt;
@@ -583,7 +583,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         <div class="doc-date">${dateLabel}</div>
       </div>
       <div class="doc-header-right">
-        <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
+        <div class="doc-logo-container">
+          <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
+          <div class="doc-logo-wordmark"><span class="wm-keter">Keter</span> <span class="wm-marketing">Marketing</span></div>
+        </div>
       </div>
     </div>
 
