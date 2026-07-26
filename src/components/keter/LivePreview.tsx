@@ -59,7 +59,7 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
         </div>
       </div>
 
-      {/* Preview area — TWO SEPARATE page containers with visible gray gap between them */}
+      {/* Preview area — TWO SEPARATE page containers with small gray gap between them */}
       <div className="flex-1 overflow-auto bg-[#F3F4F6] p-4 md:p-6">
         <div className="flex flex-col items-center gap-2">
           {/* PAGE 1 — its own white sheet with shadow */}
@@ -69,6 +69,8 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
               transformOrigin: "top center",
               width: "210mm",
               height: "297mm",
+              // Margin-bottom compensates for the scale so the next page sits close
+              marginBottom: "-59.4mm", // 297mm * 0.20 = 59.4mm (the unscaled portion)
               flexShrink: 0,
             }}
           >
@@ -95,6 +97,7 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
               transformOrigin: "top center",
               width: "210mm",
               height: "297mm",
+              marginBottom: "-59.4mm", // compensate for scale
               flexShrink: 0,
             }}
           >
