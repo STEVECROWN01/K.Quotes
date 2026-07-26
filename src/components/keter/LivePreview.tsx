@@ -7,26 +7,27 @@ import { renderDocumentHtml, type DocumentPayload } from "./document-html";
  * LivePreview — renders the actual PDF document HTML inside a scaled iframe.
  * Updates in real time as the user fills the form.
  *
- * Layout:
- *   - Outer container: k-card, fills the right column
- *   - Inner scroll area: only ONE scrollbar (the outer one)
- *   - Two separate page iframes stacked with a gap between them
- *   - No inner scrollbars on the iframes themselves
+ * Uses a SINGLE iframe with the full HTML (both pages) to ensure CSS works
+ * on both pages. The iframe has scrolling disabled and overflow hidden —
+ * only the outer container scrolls. A visual gap between pages is created
+ * via CSS margin on the second .page div (injected into the iframe HTML).
  */
 export function LivePreview({ payload }: { payload: DocumentPayload }) {
-  const html = useMemo(() => renderDocumentHtml(payload), [payload]);
-
-  // Split the HTML into two pages at the page break.
-  // Each iframe renders ONE page (height = 297mm), so no inner scrollbar.
-  // The outer container provides the only scroll.
-  const page1Html = html.replace(
-    /<!-- ============ PAGE 2 ============ -->[\s\S]*$/,
-    "</body></html>"
-  );
-  const page2Html = html.replace(
-    /^[\s\S]*<!-- ============ PAGE 2 ============ -->/,
-    `<!DOCTYPE html><html lang="${payload.language}"><head><meta charset="utf-8"/><style>body{margin:0;padding:0;}</style></head><body><!-- ============ PAGE 2 ============ -->`
-  );
+  const html = useMemo(() => {
+    const full = renderDocumentHtml(payload);
+    // Inject CSS to add a visual gap between the two pages in the iframe
+    // and hide the iframe's own scrollbar
+    const extraCss = `
+      <style>
+        /* Add gap between page 1 and page 2 for preview display */
+        .page:first-child { margin-bottom: 8mm !important; }
+        /* Hide scrollbar inside iframe */
+        ::-webkit-scrollbar { display: none; }
+        body { -ms-overflow-style: none; scrollbar-width: none; }
+      </style>
+    `;
+    return full.replace("</head>", extraCss + "</head>");
+  }, [payload]);
 
   return (
     <div className="k-card !p-0 overflow-hidden h-full flex flex-col">
@@ -43,61 +44,33 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
         </div>
       </div>
 
-      {/* Preview area — only this scrolls. Two separate pages with a gap. */}
+      {/* Preview area — only this scrolls. Single iframe, no inner scrollbar. */}
       <div className="flex-1 overflow-auto bg-[#F3F4F6] p-4 md:p-6">
-        <div className="flex flex-col items-center gap-4">
-          {/* Page 1 */}
-          <div
+        <div
+          style={{
+            transform: "scale(0.80)",
+            transformOrigin: "top center",
+            width: "210mm",
+            // 2 pages + gap: 297mm + 8mm + 297mm = 602mm
+            height: "602mm",
+            margin: "0 auto",
+            boxShadow: "0 4px 24px rgba(0,0,40,0.12)",
+          }}
+          className="bg-white"
+        >
+          <iframe
+            title="Document preview"
+            srcDoc={html}
+            scrolling="no"
             style={{
-              transform: "scale(0.80)",
-              transformOrigin: "top center",
               width: "210mm",
-              height: "297mm",
-              marginBottom: "-50mm", // compensate for scale to reduce visual gap
-              boxShadow: "0 4px 24px rgba(0,0,40,0.12)",
+              height: "602mm",
+              border: "none",
+              display: "block",
+              background: "white",
+              overflow: "hidden",
             }}
-            className="bg-white flex-shrink-0"
-          >
-            <iframe
-              title="Document preview — Page 1"
-              srcDoc={page1Html}
-              scrolling="no"
-              style={{
-                width: "210mm",
-                height: "297mm",
-                border: "none",
-                display: "block",
-                background: "white",
-                overflow: "hidden",
-              }}
-            />
-          </div>
-
-          {/* Page 2 */}
-          <div
-            style={{
-              transform: "scale(0.80)",
-              transformOrigin: "top center",
-              width: "210mm",
-              height: "297mm",
-              boxShadow: "0 4px 24px rgba(0,0,40,0.12)",
-            }}
-            className="bg-white flex-shrink-0"
-          >
-            <iframe
-              title="Document preview — Page 2"
-              srcDoc={page2Html}
-              scrolling="no"
-              style={{
-                width: "210mm",
-                height: "297mm",
-                border: "none",
-                display: "block",
-                background: "white",
-                overflow: "hidden",
-              }}
-            />
-          </div>
+          />
         </div>
       </div>
 

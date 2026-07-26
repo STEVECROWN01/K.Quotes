@@ -6,7 +6,7 @@ import {
   DEFAULT_BANK_DETAILS,
   DEFAULT_PAYMENT_LINK,
 } from "@/lib/defaults";
-import { UI, buildDocNumber, quoteToInvoiceNumber, CURRENCY_OPTIONS } from "@/lib/i18n";
+import { UI, buildDocNumber, quoteToInvoiceNumber, CURRENCY_OPTIONS, getCurrencySymbol } from "@/lib/i18n";
 import type { Language, DocType, ServiceType } from "@/lib/services";
 import type { DocumentPayload } from "./document-html";
 
@@ -405,6 +405,7 @@ export function QuoteForm({
               </button>
             </div>
           </div>
+          {/* Currency + CV quantity on the same line */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <label className="k-label" htmlFor="currency">
@@ -423,18 +424,37 @@ export function QuoteForm({
                 ))}
               </select>
             </div>
+            {(state.service === "cv" || state.service === "both") && (
+              <div>
+                <label className="k-label" htmlFor="cvQuantity">
+                  {state.language === "fr" ? "Nombre de CV" : "Number of CVs"}
+                </label>
+                <input
+                  id="cvQuantity"
+                  type="number"
+                  min={1}
+                  max={20}
+                  step={1}
+                  className="k-input"
+                  value={state.cvQuantity}
+                  onChange={(e) => update("cvQuantity", e.target.value)}
+                  placeholder="1"
+                />
+              </div>
+            )}
           </div>
+          {/* Price fields — label shows the selected currency symbol */}
           <div
             className={
               state.service === "both"
-                ? "grid grid-cols-1 md:grid-cols-3 gap-4"
-                : "grid grid-cols-1 md:grid-cols-2 gap-4"
+                ? "grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"
+                : "grid grid-cols-1 gap-4 mt-4"
             }
           >
             {(state.service === "cv" || state.service === "both") && (
               <div>
                 <label className="k-label" htmlFor="priceCv">
-                  {t.priceCv}
+                  {state.language === "fr" ? "Prix CV" : "CV price"} ({getCurrencySymbol(state.currency)})
                 </label>
                 <input
                   id="priceCv"
@@ -452,7 +472,7 @@ export function QuoteForm({
               state.service === "both") && (
               <div>
                 <label className="k-label" htmlFor="priceLinkedin">
-                  {t.priceLinkedin}
+                  {state.language === "fr" ? "Prix LinkedIn" : "LinkedIn price"} ({getCurrencySymbol(state.currency)})
                 </label>
                 <input
                   id="priceLinkedin"
@@ -464,29 +484,6 @@ export function QuoteForm({
                   onChange={(e) => update("priceLinkedin", e.target.value)}
                   placeholder="120.00"
                 />
-              </div>
-            )}
-            {(state.service === "cv" || state.service === "both") && (
-              <div>
-                <label className="k-label" htmlFor="cvQuantity">
-                  {state.language === "fr" ? "Nombre de CV" : "Number of CVs"}
-                </label>
-                <input
-                  id="cvQuantity"
-                  type="number"
-                  min={1}
-                  max={20}
-                  step={1}
-                  className="k-input"
-                  value={state.cvQuantity}
-                  onChange={(e) => update("cvQuantity", e.target.value)}
-                  placeholder="1"
-                />
-                <p className="text-[10px] text-[#6B7280] mt-1 italic">
-                  {state.language === "fr"
-                    ? "Pour plusieurs CV (domaines différents)"
-                    : "For multiple CVs (different domains)"}
-                </p>
               </div>
             )}
           </div>

@@ -224,24 +224,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 400;
   }
   .doc-header-right { display: flex; align-items: flex-start; }
-  .doc-logo { width: 14mm; height: auto; }
-  .doc-logo-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5mm;
-  }
-  .doc-logo-wordmark {
-    font-family: 'Inter', sans-serif;
-    font-size: 8pt;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-align: center;
-    line-height: 1;
-    white-space: nowrap;
-  }
-  .doc-logo-wordmark .wm-keter { color: #D4AF37; }
-  .doc-logo-wordmark .wm-marketing { color: #000000; }
+  .doc-logo { width: 22mm; height: auto; }
 
   .hr { border: 0; border-top: 1px solid #d1d5db; margin: 2mm 0; }
 
@@ -250,7 +233,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8mm;
-    margin: 1mm 0;
+    margin: 5mm 0;
   }
   .party-block .party-label {
     font-size: 9pt;
@@ -354,16 +337,16 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 700;
     color: #000000;
     margin-bottom: 2px;
-    font-size: 9.5pt;
+    font-size: 10pt;
   }
   .service-bullets { margin: 0 0 3px 0; padding: 0; list-style: none; }
   .service-bullets li {
     position: relative;
     padding-left: 10px;
     margin-bottom: 0;
-    font-size: 8.5pt;
+    font-size: 9pt;
     color: #374151;
-    line-height: 1.25;
+    line-height: 1.5;
   }
   .service-bullets li::before {
     content: "■";
@@ -377,8 +360,9 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .service-delivery {
     font-style: italic;
     color: #6b7280;
-    font-size: 8.5pt;
-    margin-top: 2px;
+    font-size: 9pt;
+    margin-top: 3px;
+    line-height: 1.4;
   }
 
   /* TOTAL row */
@@ -409,7 +393,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8mm;
-    margin-top: 8mm;
+    margin-top: 12mm;
   }
   .cb-left .cb-title, .cb-right .cb-title {
     font-size: 10.5pt;
@@ -438,7 +422,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     margin-bottom: 10mm;
   }
   .signature-line {
-    margin-top: 14mm;
+    margin-top: 18mm;
     border-top: 1px solid #000000;
     padding-top: 3px;
     font-size: 8.5pt;
@@ -583,10 +567,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         <div class="doc-date">${dateLabel}</div>
       </div>
       <div class="doc-header-right">
-        <div class="doc-logo-container">
-          <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
-          <div class="doc-logo-wordmark"><span class="wm-keter">Keter</span> <span class="wm-marketing">Marketing</span></div>
-        </div>
+        <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
       </div>
     </div>
 

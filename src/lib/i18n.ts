@@ -317,14 +317,20 @@ export function formatCurrency(amount: number, lang: Language, currency: string 
 
 // Currency options for the dropdown
 export const CURRENCY_OPTIONS = [
-  { code: "EUR", label: "Euro (€)" },
-  { code: "USD", label: "US Dollar ($)" },
-  { code: "XOF", label: "Franc CFA (FCFA)" },
-  { code: "XAF", label: "Franc CFA Centrafricain (FCFA)" },
-  { code: "CAD", label: "Dollar Canadien ($ CA)" },
-  { code: "GBP", label: "Livre Sterling (£)" },
-  { code: "CHF", label: "Franc Suisse (CHF)" },
+  { code: "EUR", label: "Euro (€)", symbol: "€" },
+  { code: "USD", label: "US Dollar ($)", symbol: "$" },
+  { code: "XOF", label: "Franc CFA (FCFA)", symbol: "FCFA" },
+  { code: "XAF", label: "Franc CFA Centrafricain (FCFA)", symbol: "FCFA" },
+  { code: "CAD", label: "Dollar Canadien ($ CA)", symbol: "$ CA" },
+  { code: "GBP", label: "Livre Sterling (£)", symbol: "£" },
+  { code: "CHF", label: "Franc Suisse (CHF)", symbol: "CHF" },
 ] as const;
+
+// Get the symbol for a currency code
+export function getCurrencySymbol(code: string): string {
+  const c = CURRENCY_OPTIONS.find((o) => o.code === code);
+  return c?.symbol || "€";
+}
 
 // Build the doc number: "D" + 2-digit year + 5-digit client number zero-padded
 // Example: client 1 in 2026 → D2600001
