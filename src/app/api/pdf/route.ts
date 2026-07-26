@@ -67,6 +67,7 @@ export async function POST(req: NextRequest) {
         priceCv: quote.priceCv,
         priceLinkedin: quote.priceLinkedin,
         cvQuantity: quote.cvQuantity,
+        currency: quote.currency,
         accountHolder: quote.accountHolder,
         iban: quote.iban,
         bic: quote.bic,

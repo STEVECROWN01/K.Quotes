@@ -31,7 +31,7 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
           style={{
             // A4 = 210mm × 297mm. Render at scale 0.75 on desktop for readability.
             // The container fits 2 pages stacked.
-            transform: "scale(0.75)",
+            transform: "scale(0.85)",
             transformOrigin: "top center",
             width: "210mm",
             height: "594mm", // 2 × 297mm

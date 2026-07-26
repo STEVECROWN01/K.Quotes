@@ -19,6 +19,7 @@ create table if not exists public.quotes (
   price_cv            numeric(10, 2),
   price_linkedin      numeric(10, 2),
   cv_quantity         integer default 1,
+  currency            text default 'EUR',
   account_holder      text not null,
   iban                text not null,
   bic                 text not null,

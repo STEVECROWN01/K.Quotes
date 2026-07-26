@@ -6,7 +6,7 @@ import {
   DEFAULT_BANK_DETAILS,
   DEFAULT_PAYMENT_LINK,
 } from "@/lib/defaults";
-import { UI, buildDocNumber, quoteToInvoiceNumber } from "@/lib/i18n";
+import { UI, buildDocNumber, quoteToInvoiceNumber, CURRENCY_OPTIONS } from "@/lib/i18n";
 import type { Language, DocType, ServiceType } from "@/lib/services";
 import type { DocumentPayload } from "./document-html";
 
@@ -24,6 +24,7 @@ export type FormState = {
   priceCv: string;
   priceLinkedin: string;
   cvQuantity: string; // number of CVs (1, 2, 3, 4+ for different domains)
+  currency: string; // currency code: EUR, USD, XOF, CAD, etc.
   accountHolder: string;
   iban: string;
   bic: string;
@@ -52,6 +53,7 @@ export const initialFormState: FormState = {
   priceCv: "120",
   priceLinkedin: "120",
   cvQuantity: "1",
+  currency: "EUR",
   accountHolder: DEFAULT_BANK_DETAILS.accountHolder,
   iban: DEFAULT_BANK_DETAILS.iban,
   bic: DEFAULT_BANK_DETAILS.bic,
@@ -81,6 +83,7 @@ export function formStateToPayload(f: FormState): DocumentPayload {
     priceCv: f.priceCv ? parseFloat(f.priceCv) : null,
     priceLinkedin: f.priceLinkedin ? parseFloat(f.priceLinkedin) : null,
     cvQuantity: parseInt(f.cvQuantity, 10) || 1,
+    currency: f.currency,
     accountHolder: f.accountHolder,
     iban: f.iban,
     bic: f.bic,
@@ -109,6 +112,7 @@ export function quoteRecordToFormState(q: any): FormState {
     priceCv: q.priceCv != null ? String(q.priceCv) : "",
     priceLinkedin: q.priceLinkedin != null ? String(q.priceLinkedin) : "",
     cvQuantity: q.cvQuantity != null ? String(q.cvQuantity) : "1",
+    currency: q.currency ?? "EUR",
     accountHolder: q.accountHolder,
     iban: q.iban,
     bic: q.bic,
@@ -399,6 +403,25 @@ export function QuoteForm({
               >
                 {t.both}
               </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="k-label" htmlFor="currency">
+                {state.language === "fr" ? "Devise" : "Currency"}
+              </label>
+              <select
+                id="currency"
+                className="k-input"
+                value={state.currency}
+                onChange={(e) => update("currency", e.target.value)}
+              >
+                {CURRENCY_OPTIONS.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
           <div

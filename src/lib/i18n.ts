@@ -297,14 +297,34 @@ export function formatDate(iso: string, lang: Language): string {
   return `${d.getDate().toString().padStart(2, "0")} ${months[lang][d.getMonth()]} ${d.getFullYear()}`;
 }
 
-export function formatCurrency(amount: number, lang: Language): string {
-  // FR: "120,00 €"   EN: "€120.00"
-  const formatted = amount.toLocaleString(lang === "fr" ? "fr-FR" : "en-IE", {
+export function formatCurrency(amount: number, lang: Language, currency: string = "EUR"): string {
+  const currencyMap: Record<string, { symbol: string; locale: string; symbolFirst: boolean }> = {
+    EUR: { symbol: "€", locale: lang === "fr" ? "fr-FR" : "en-IE", symbolFirst: false },
+    USD: { symbol: "$", locale: "en-US", symbolFirst: true },
+    XOF: { symbol: "FCFA", locale: "fr-FR", symbolFirst: false },
+    XAF: { symbol: "FCFA", locale: "fr-FR", symbolFirst: false },
+    CAD: { symbol: "$ CA", locale: "fr-CA", symbolFirst: false },
+    GBP: { symbol: "£", locale: "en-GB", symbolFirst: true },
+    CHF: { symbol: "CHF", locale: "de-CH", symbolFirst: true },
+  };
+  const c = currencyMap[currency] || currencyMap.EUR;
+  const formatted = amount.toLocaleString(c.locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-  return lang === "fr" ? `${formatted} €` : `€${formatted}`;
+  return c.symbolFirst ? `${c.symbol}${formatted}` : `${formatted} ${c.symbol}`;
 }
+
+// Currency options for the dropdown
+export const CURRENCY_OPTIONS = [
+  { code: "EUR", label: "Euro (€)" },
+  { code: "USD", label: "US Dollar ($)" },
+  { code: "XOF", label: "Franc CFA (FCFA)" },
+  { code: "XAF", label: "Franc CFA Centrafricain (FCFA)" },
+  { code: "CAD", label: "Dollar Canadien ($ CA)" },
+  { code: "GBP", label: "Livre Sterling (£)" },
+  { code: "CHF", label: "Franc Suisse (CHF)" },
+] as const;
 
 // Build the doc number: "D" + 2-digit year + 5-digit client number zero-padded
 // Example: client 1 in 2026 → D2600001

@@ -21,6 +21,7 @@ export type QuoteRecord = {
   priceCv: number | null;
   priceLinkedin: number | null;
   cvQuantity: number | null;
+  currency: string | null;
   accountHolder: string;
   iban: string;
   bic: string;
@@ -52,6 +53,7 @@ type DbRow = {
   price_cv: number | null;
   price_linkedin: number | null;
   cv_quantity: number | null;
+  currency: string | null;
   account_holder: string;
   iban: string;
   bic: string;
@@ -83,6 +85,7 @@ function rowToRecord(row: DbRow): QuoteRecord {
     priceCv: row.price_cv,
     priceLinkedin: row.price_linkedin,
     cvQuantity: row.cv_quantity,
+    currency: row.currency,
     accountHolder: row.account_holder,
     iban: row.iban,
     bic: row.bic,
@@ -114,6 +117,7 @@ function recordToRow(r: Partial<QuoteRecord>): Partial<DbRow> {
   if (r.priceCv !== undefined) row.price_cv = r.priceCv;
   if (r.priceLinkedin !== undefined) row.price_linkedin = r.priceLinkedin;
   if (r.cvQuantity !== undefined) row.cv_quantity = r.cvQuantity;
+  if (r.currency !== undefined) row.currency = r.currency;
   if (r.accountHolder !== undefined) row.account_holder = r.accountHolder;
   if (r.iban !== undefined) row.iban = r.iban;
   if (r.bic !== undefined) row.bic = r.bic;
@@ -235,6 +239,7 @@ export async function convertQuoteToInvoice(
     price_cv: existing_.price_cv,
     price_linkedin: existing_.price_linkedin,
     cv_quantity: existing_.cv_quantity,
+    currency: existing_.currency,
     account_holder: existing_.account_holder,
     iban: existing_.iban,
     bic: existing_.bic,

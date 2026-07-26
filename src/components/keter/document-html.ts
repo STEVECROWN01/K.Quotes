@@ -40,6 +40,7 @@ export type DocumentPayload = {
   priceCv: number | null;
   priceLinkedin: number | null;
   cvQuantity?: number; // number of CVs (1, 2, 3, 4+ for multiple domains)
+  currency?: string; // currency code: EUR, USD, XOF, CAD, GBP, CHF
   accountHolder: string;
   iban: string;
   bic: string;
@@ -344,10 +345,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-size: 9pt;
     width: 8%;
   }
-  .services-table tbody td.desc-cell { width: 44%; }
-  .services-table tbody td.price-cell { width: 18%; text-align: right; font-variant-numeric: tabular-nums; }
-  .services-table tbody td.qty-cell { width: 12%; text-align: center; }
-  .services-table tbody td.total-cell { width: 18%; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .services-table tbody td.desc-cell { width: 52%; }
+  .services-table tbody td.price-cell { width: 15%; text-align: right; font-variant-numeric: tabular-nums; }
+  .services-table tbody td.qty-cell { width: 11%; text-align: center; }
+  .services-table tbody td.total-cell { width: 14%; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   .service-name {
     font-weight: 700;
@@ -408,7 +409,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8mm;
-    margin-top: 14mm;
+    margin-top: 8mm;
   }
   .cb-left .cb-title, .cb-right .cb-title {
     font-size: 10.5pt;
@@ -434,7 +435,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .cb-right .cb-date-line {
     font-size: 9pt;
     color: #6b7280;
-    margin-bottom: 20mm;
+    margin-bottom: 10mm;
   }
   .signature-line {
     margin-top: 0;
@@ -582,10 +583,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         <div class="doc-date">${dateLabel}</div>
       </div>
       <div class="doc-header-right">
-        <div class="doc-logo-container">
-          <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
-          <div class="doc-logo-wordmark"><span class="wm-keter">Keter</span> <span class="wm-marketing">Marketing</span></div>
-        </div>
+        <img class="doc-logo" src="${logoSrc}" alt="Keter Marketing" />
       </div>
     </div>
 
@@ -626,10 +624,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       <thead>
         <tr>
           <th style="width: 8%">${t.thType}</th>
-          <th style="width: 44%">${t.thDescription}</th>
-          <th class="num" style="width: 18%">${t.thUnitPrice}</th>
-          <th class="center" style="width: 12%">${t.thQty}</th>
-          <th class="num" style="width: 18%">${t.thTotal}</th>
+          <th style="width: 52%">${t.thDescription}</th>
+          <th class="num" style="width: 15%">${t.thUnitPrice}</th>
+          <th class="center" style="width: 11%">${t.thQty}</th>
+          <th class="num" style="width: 14%">${t.thTotal}</th>
         </tr>
       </thead>
       <tbody>
@@ -645,9 +643,9 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
               </ul>
               <div class="service-delivery">${it.deliveryNote}</div>
             </td>
-            <td class="price-cell">${formatCurrency(it.unitPrice, lang)}</td>
+            <td class="price-cell">${formatCurrency(it.unitPrice, lang, p.currency)}</td>
             <td class="qty-cell">${it.quantity}</td>
-            <td class="total-cell">${formatCurrency(it.total, lang)}</td>
+            <td class="total-cell">${formatCurrency(it.total, lang, p.currency)}</td>
           </tr>`
           )
           .join("")}
@@ -657,7 +655,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
           <td colspan="2" class="total-spacer">TOTAL</td>
           <td class="total-spacer"></td>
           <td class="total-qty">${totalQuantity}</td>
-          <td class="total-amount">${formatCurrency(grandTotal, lang)}</td>
+          <td class="total-amount">${formatCurrency(grandTotal, lang, p.currency)}</td>
         </tr>
       </tfoot>
     </table>

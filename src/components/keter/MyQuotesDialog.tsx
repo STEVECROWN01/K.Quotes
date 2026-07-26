@@ -227,7 +227,7 @@ export function MyQuotesDialog({
                       <td className="font-medium">{q.fullName}</td>
                       <td className="text-[#6B7280] text-xs">{q.date}</td>
                       <td className="text-right font-mono">
-                        {formatCurrency(total, q.language)}
+                        {formatCurrency(total, q.language, q.currency ?? "EUR")}
                       </td>
                       <td>
                         <span className="inline-block px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider bg-[#F3F4F6] text-[#000028]" style={{ borderRadius: 2 }}>
