@@ -286,7 +286,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
 
   /* ---- Thank-you block ---- */
-  .thank-you { margin: 8mm 0 6mm 0; }
+  .thank-you { margin: 4mm 0 6mm 0; }
   .thank-you-prefix {
     font-weight: 700;
     font-size: 11pt;
@@ -411,6 +411,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     grid-template-columns: 1fr 1fr;
     gap: 8mm;
     margin-top: 12mm;
+  }
+  /* When 2+ services, reduce the gap below the table to fit on one page */
+  .conditions-block.conditions-block-multi {
+    margin-top: 6mm;
   }
   .cb-left .cb-title, .cb-right .cb-title {
     font-size: 10.5pt;
@@ -666,7 +670,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
 
     ${invoicePaymentBlock}
 
-    <div class="conditions-block">
+    <div class="conditions-block ${items.length > 1 ? 'conditions-block-multi' : ''}">
       <div class="cb-left">
         <div class="cb-title">${t.conditionsBlock}</div>
         <div class="cb-row"><span class="lbl">${t.conditionsReglement} :</span> <span class="val">${p.paymentConditions}</span></div>
