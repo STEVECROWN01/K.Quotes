@@ -343,12 +343,12 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 600;
     color: #000000;
     font-size: 9pt;
-    width: 8%;
+    width: 7%;
   }
   .services-table tbody td.desc-cell { width: 52%; }
-  .services-table tbody td.price-cell { width: 15%; text-align: right; font-variant-numeric: tabular-nums; }
-  .services-table tbody td.qty-cell { width: 11%; text-align: center; }
-  .services-table tbody td.total-cell { width: 14%; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .services-table tbody td.price-cell { width: 18%; text-align: right; font-variant-numeric: tabular-nums; }
+  .services-table tbody td.qty-cell { width: 7%; text-align: center; }
+  .services-table tbody td.total-cell { width: 16%; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
   .service-name {
     font-weight: 700;
@@ -450,11 +450,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     color: #6b7280;
   }
   .signature-line .sig-label { font-weight: 600; color: #000000; }
-  .signature-line .sig-quality {
-    margin-top: 2px;
-    color: #6b7280;
-    font-style: italic;
-  }
+  .signature-line .sig-separator { color: #6b7280; margin: 0 4px; font-weight: 400; }
+  .signature-line .sig-quality-inline { color: #6b7280; font-weight: 400; font-style: italic; }
 
   /* ---- Invoice payment block ---- */
   .invoice-payment-block {
@@ -631,11 +628,11 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     <table class="services-table">
       <thead>
         <tr>
-          <th style="width: 8%">${t.thType}</th>
+          <th style="width: 7%">${t.thType}</th>
           <th style="width: 52%">${t.thDescription}</th>
-          <th class="num" style="width: 15%">${t.thUnitPrice}</th>
-          <th class="center" style="width: 11%">${t.thQty}</th>
-          <th class="num" style="width: 14%">${t.thTotal}</th>
+          <th class="num" style="width: 18%">${t.thUnitPrice}</th>
+          <th class="center" style="width: 7%">${t.thQty}</th>
+          <th class="num" style="width: 16%">${t.thTotal}</th>
         </tr>
       </thead>
       <tbody>
@@ -682,8 +679,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         <div class="cb-title">${t.bonPourAccord}</div>
         <div class="cb-date-line">${lang === "fr" ? "À _________________________ , le ____ / ____ / ______" : "At _________________________ , on ____ / ____ / ______"}</div>
         <div class="signature-line">
-          <div class="sig-label">${t.signatureCachet}</div>
-          <div class="sig-quality">${t.qualiteSignataire}</div>
+          <div class="sig-label">${t.signatureCachet} <span class="sig-separator">|</span> <span class="sig-quality-inline">${t.qualiteSignataire}</span></div>
         </div>
       </div>
     </div>
