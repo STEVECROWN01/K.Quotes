@@ -386,27 +386,24 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     line-height: 1.4;
   }
 
-  /* TOTAL row */
+  /* TOTAL row — single undivided bar, TOTAL on left, price on right */
   .services-table tfoot td {
     background: #000000;
     color: #ffffff;
-    padding: 7px 8px;
+    padding: 8px 10px;
     font-weight: 700;
     font-size: 10.5pt;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    border: none;
+  }
+  .services-table tfoot td.total-label {
+    text-align: left;
   }
   .services-table tfoot td.total-amount {
     text-align: right;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-  }
-  .services-table tfoot td.total-spacer { background: #000000; }
-  .services-table tfoot td.total-qty {
-    text-align: center;
-    background: #000000;
-    color: #ffffff;
-    font-weight: 700;
   }
 
   /* ---- Conditions / signature block ---- */
@@ -669,9 +666,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="2" class="total-spacer">TOTAL</td>
-          <td class="total-spacer"></td>
-          <td class="total-qty">${totalQuantity}</td>
+          <td colspan="4" class="total-label">TOTAL</td>
           <td class="total-amount">${formatCurrency(grandTotal, lang, p.currency)}</td>
         </tr>
       </tfoot>
