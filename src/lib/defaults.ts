@@ -11,7 +11,7 @@ export const DEFAULT_BANK_DETAILS = {
 } as const;
 
 export const DEFAULT_PAYMENT_LINK =
-  "https://shefapro.mymaketou.store/products/cv-premium-optimisation-linkedin-profil-qui-attire-les-recruteurs/checkout";
+  "https://shefapro.mymaketou.shop/products/cv-premium-optimisation-linkedin-profil-qui-attire-les-recruteurs/checkout";
 
 // Emetteur (issuer) — static Keter Marketing info shown on every document.
 // Matches the reference PDF exactly.

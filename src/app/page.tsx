@@ -13,6 +13,8 @@ import { toast } from "sonner";
 
 export default function Home() {
   const [formState, setFormState] = useState<FormState>(initialFormState);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [originalState, setOriginalState] = useState<FormState | null>(null);
   const [generating, setGenerating] = useState(false);
   const [saving, setSaving] = useState(false);
   const [myQuotesOpen, setMyQuotesOpen] = useState(false);
@@ -146,9 +148,75 @@ export default function Home() {
     }
   }, [payload, t.saved]);
 
+  // Save changes to an existing quote (edit mode)
+  const handleSaveChanges = useCallback(async () => {
+    if (!editingId) return;
+    setSaving(true);
+    try {
+      const body = {
+        id: editingId,
+        quoteNumber: payload.quoteNumber,
+        docType: payload.docType,
+        language: payload.language,
+        clientNumber: payload.clientNumber,
+        date: payload.date,
+        fullName: payload.fullName,
+        city: payload.city,
+        country: payload.country,
+        phone: payload.phone,
+        email: payload.email,
+        service: payload.service,
+        priceCv: payload.priceCv,
+        priceLinkedin: payload.priceLinkedin,
+        cvQuantity: payload.cvQuantity,
+        currency: payload.currency,
+        accountHolder: payload.accountHolder,
+        iban: payload.iban,
+        bic: payload.bic,
+        bank: payload.bank,
+        paymentMode: payload.paymentMode,
+        paymentConditions: payload.paymentConditions,
+        paymentLink: payload.paymentLink,
+        paymentStatus: payload.paymentStatus,
+        paymentDate: payload.paymentDate,
+        status: "saved",
+      };
+      const res = await fetch("/api/quotes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Unknown" }));
+        throw new Error(err.error || "Failed to save changes");
+      }
+      const newFs = { ...formState };
+      setOriginalState(newFs);
+      toast.success(formState.language === "fr" ? "Modifications enregistrées" : "Changes saved");
+    } catch (e: any) {
+      toast.error(e.message);
+    } finally {
+      setSaving(false);
+    }
+  }, [editingId, payload, formState]);
+
+  // Revert changes back to original state
+  const handleRevertChanges = useCallback(() => {
+    if (originalState) {
+      setFormState(originalState);
+      toast.success(formState.language === "fr" ? "Modifications annulées" : "Changes reverted");
+    }
+  }, [originalState, formState.language]);
+
+  // Check if form is dirty (has unsaved changes) when in edit mode
+  const isDirty = editingId !== null && originalState !== null && JSON.stringify(formState) !== JSON.stringify(originalState);
+
   const handleLoadQuote = useCallback(
     (q: QuoteRecord) => {
-      setFormState(quoteRecordToFormState(q));
+      const fs = quoteRecordToFormState(q);
+      setFormState(fs);
+      setOriginalState(fs);
+      setEditingId(q.id);
       setMyQuotesOpen(false);
       toast.success(
         formState.language === "fr"
@@ -278,6 +346,8 @@ export default function Home() {
             <button
               onClick={() => {
                 setFormState(initialFormState);
+                setEditingId(null);
+                setOriginalState(null);
               }}
               className="k-btn-primary !py-2 !px-3 text-xs"
             >
@@ -299,7 +369,13 @@ export default function Home() {
                   {formState.docType === "devis" ? t.devis : t.facture}
                 </div>
                 <h1 className="font-serif text-2xl md:text-3xl font-semibold text-[#000028] mt-0.5">
-                  {formState.docType === "devis" ? t.titleDevis : t.titleFacture}
+                  {editingId
+                    ? (formState.language === "fr"
+                        ? `Modifier le ${formState.docType === "devis" ? "Devis" : "Facture"}`
+                        : `Edit ${formState.docType === "devis" ? "Quote" : "Invoice"}`)
+                    : (formState.language === "fr"
+                        ? `Créer un ${formState.docType === "devis" ? "Devis" : "Facture"}`
+                        : `Create ${formState.docType === "devis" ? "a Quote" : "an Invoice"}`)}
                 </h1>
               </div>
               {/* Mobile preview toggle */}
@@ -317,6 +393,10 @@ export default function Home() {
               setState={setFormState}
               onGeneratePdf={handleGeneratePdf}
               onSave={handleSave}
+              onSaveChanges={handleSaveChanges}
+              onRevertChanges={handleRevertChanges}
+              editingId={editingId}
+              isDirty={isDirty}
               generating={generating}
               saving={saving}
             />

@@ -132,6 +132,10 @@ interface Props {
   setState: (s: FormState) => void;
   onGeneratePdf: () => void;
   onSave: () => void;
+  onSaveChanges?: () => void;
+  onRevertChanges?: () => void;
+  editingId?: string | null;
+  isDirty?: boolean;
   generating?: boolean;
   saving?: boolean;
 }
@@ -141,6 +145,10 @@ export function QuoteForm({
   setState,
   onGeneratePdf,
   onSave,
+  onSaveChanges,
+  onRevertChanges,
+  editingId,
+  isDirty,
   generating,
   saving,
 }: Props) {
@@ -680,32 +688,15 @@ export function QuoteForm({
         </label>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 pt-2">
-        <button
-          type="button"
-          onClick={onGeneratePdf}
-          disabled={generating || !state.fullName || !state.clientNumber}
-          className="k-btn-primary flex-1"
-        >
-          {generating ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              {state.language === "fr" ? "Génération..." : "Generating..."}
-            </>
-          ) : (
-            <>
-              <FileText className="w-4 h-4" />
-              {t.generatePdf}
-            </>
-          )}
-        </button>
-        {!isInvoice && (
+      {/* Action buttons — different in edit mode vs new mode */}
+      {editingId ? (
+        // Edit mode: Save Changes + Revert Changes (disabled until dirty)
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
           <button
             type="button"
-            onClick={onSave}
-            disabled={saving || !state.fullName || !state.clientNumber}
-            className="k-btn-secondary flex-1"
+            onClick={onSaveChanges}
+            disabled={!isDirty || saving || !state.fullName || !state.clientNumber}
+            className="k-btn-primary flex-1"
           >
             {saving ? (
               <>
@@ -715,12 +706,63 @@ export function QuoteForm({
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                {t.saveAndGenerateLater}
+                {state.language === "fr" ? "Enregistrer les modifications" : "Save changes"}
               </>
             )}
           </button>
-        )}
-      </div>
+          <button
+            type="button"
+            onClick={onRevertChanges}
+            disabled={!isDirty}
+            className="k-btn-secondary flex-1"
+          >
+            <RotateCcw className="w-4 h-4" />
+            {state.language === "fr" ? "Annuler les modifications" : "Revert changes"}
+          </button>
+        </div>
+      ) : (
+        // New mode: Generate PDF + Save
+        <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <button
+            type="button"
+            onClick={onGeneratePdf}
+            disabled={generating || !state.fullName || !state.clientNumber}
+            className="k-btn-primary flex-1"
+          >
+            {generating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                {state.language === "fr" ? "Génération..." : "Generating..."}
+              </>
+            ) : (
+              <>
+                <FileText className="w-4 h-4" />
+                {t.generatePdf}
+              </>
+            )}
+          </button>
+          {!isInvoice && (
+            <button
+              type="button"
+              onClick={onSave}
+              disabled={saving || !state.fullName || !state.clientNumber}
+              className="k-btn-secondary flex-1"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {state.language === "fr" ? "Enregistrement..." : "Saving..."}
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  {t.saveAndGenerateLater}
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

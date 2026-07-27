@@ -195,7 +195,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     transform: translate(-50%, -50%);
     width: 60%;
     max-width: 150mm;
-    opacity: 0.06;
+    opacity: 0.08;
     pointer-events: none;
     z-index: 0;
   }
@@ -235,9 +235,9 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .doc-logo-wordmark {
     font-family: 'Inter', sans-serif;
-    font-size: 8pt;
+    font-size: 7pt;
     font-weight: 700;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
     text-align: center;
     line-height: 1;
     white-space: nowrap;
@@ -398,10 +398,16 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     letter-spacing: 0.5px;
     border: none;
   }
-  .services-table tfoot td.total-label {
+  .services-table tfoot td.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  .services-table tfoot td.total-row .total-label {
     text-align: left;
   }
-  .services-table tfoot td.total-amount {
+  .services-table tfoot td.total-row .total-amount {
     text-align: right;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -671,8 +677,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="4" class="total-label">TOTAL</td>
-          <td class="total-amount">${formatCurrency(grandTotal, lang, p.currency)}</td>
+          <td colspan="5" class="total-row">
+            <span class="total-label">TOTAL</span>
+            <span class="total-amount">${formatCurrency(grandTotal, lang, p.currency)}</span>
+          </td>
         </tr>
       </tfoot>
     </table>
