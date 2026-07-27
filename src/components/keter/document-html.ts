@@ -141,11 +141,12 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         ["Email :", p.email || "—"],
       ];
 
-  // Build invoice-only payment block (for facture)
+  // Build invoice-only payment block (for facture) — replaces Conditions/Bon pour accord
   const invoicePaymentBlock =
     p.docType === "facture"
       ? `
       <div class="invoice-payment-block">
+        <div class="ipb-title">${lang === "fr" ? "Paiement" : "Payment"}</div>
         <div class="ipb-row"><span class="ipb-label">${t.paymentStatus}</span><span class="ipb-value">${p.paymentStatus ?? t.paid}</span></div>
         <div class="ipb-row"><span class="ipb-label">${t.modePaiement}</span><span class="ipb-value">${p.paymentMode}</span></div>
         <div class="ipb-row"><span class="ipb-label">${t.paymentDate}</span><span class="ipb-value">${paymentDateLabel || dateLabel}</span></div>
@@ -460,15 +461,23 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .invoice-payment-block {
     background: #fafafa;
     border: 1px solid #e5e7eb;
-    padding: 6px 10px;
-    margin-top: 4mm;
+    padding: 8px 12px;
+    margin-top: 6mm;
     border-radius: 2px;
+  }
+  .ipb-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
   .ipb-row {
     display: flex;
     justify-content: space-between;
     font-size: 10pt;
-    padding: 2px 0;
+    padding: 3px 0;
   }
   .ipb-label { color: #6b7280; font-weight: 500; }
   .ipb-value { color: #000000; font-weight: 600; }
@@ -670,6 +679,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
 
     ${invoicePaymentBlock}
 
+    ${p.docType === "devis" ? `
     <div class="conditions-block ${items.length > 1 ? 'conditions-block-multi' : ''}">
       <div class="cb-left">
         <div class="cb-title">${t.conditionsBlock}</div>
@@ -686,6 +696,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         </div>
       </div>
     </div>
+    ` : ""}
   </div>
 
   <div class="doc-footer">
@@ -705,6 +716,9 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   <div class="watermark"><img src="${logoSrc}" alt="Keter Marketing watermark" /></div>
 
   <div class="page2-content">
+    ${
+      p.docType === "devis"
+        ? `
     <div class="section-heading">${t.bankHeading}</div>
 
     <div class="bank-block">
@@ -724,6 +738,9 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
                <a class="payment-link-url" href="${p.paymentLink}" target="_blank" rel="noopener noreferrer">${p.paymentLink}</a>
              </div>
            </div>`
+        : ""
+    }
+    `
         : ""
     }
 

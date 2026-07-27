@@ -6,6 +6,7 @@ import { QuoteForm, initialFormState, formStateToPayload, quoteRecordToFormState
 import { LivePreview } from "@/components/keter/LivePreview";
 import { MyQuotesDialog } from "@/components/keter/MyQuotesDialog";
 import { DashboardDialog } from "@/components/keter/DashboardDialog";
+import { ConfirmDialog } from "@/components/keter/ConfirmDialog";
 import { UI, buildDocNumber } from "@/lib/i18n";
 import type { QuoteRecord } from "@/lib/storage";
 import { toast } from "sonner";
@@ -211,11 +212,21 @@ export default function Home() {
     [formState.language]
   );
 
+  const [deleteTarget, setDeleteTarget] = useState<QuoteRecord | null>(null);
+
   const handleDelete = useCallback(
-    async (q: QuoteRecord) => {
-      if (!confirm(`Delete ${q.quoteNumber}?`)) return;
+    (q: QuoteRecord) => {
+      setDeleteTarget(q);
+    },
+    []
+  );
+
+  const confirmDelete = useCallback(
+    async () => {
+      if (!deleteTarget) return;
       try {
-        await fetch(`/api/quotes/${q.id}`, { method: "DELETE" });
+        await fetch(`/api/quotes/${deleteTarget.id}`, { method: "DELETE" });
+        setDeleteTarget(null);
         setMyQuotesOpen(false);
         setTimeout(() => setMyQuotesOpen(true), 50); // refresh
         toast.success(
@@ -225,7 +236,7 @@ export default function Home() {
         toast.error(e.message);
       }
     },
-    [formState.language]
+    [deleteTarget, formState.language]
   );
 
   return (
@@ -337,23 +348,26 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* ===== Mobile preview drawer ===== */}
+      {/* ===== Mobile preview drawer — full-width bottom sheet ===== */}
       {mobilePreviewOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-40 bg-[#000028]/50 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 z-40 bg-[#000028]/50 backdrop-blur-sm flex items-end"
           onClick={() => setMobilePreviewOpen(false)}
         >
           <div
-            className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-[#F3F4F6] flex flex-col"
+            className="w-full h-[90vh] bg-[#F3F4F6] flex flex-col rounded-t-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#E5E7EB]">
-              <span className="font-serif text-sm font-semibold">
-                {t.livePreview}
-              </span>
+            <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#E5E7EB] rounded-t-xl">
+              <div className="flex items-center gap-2">
+                <span className="font-serif text-sm font-semibold text-[#000028]">
+                  {t.livePreview}
+                </span>
+              </div>
               <button
                 onClick={() => setMobilePreviewOpen(false)}
-                className="p-2"
+                className="p-2 text-[#6B7280] hover:text-[#000028] hover:bg-[#F3F4F6] transition-colors"
+                style={{ borderRadius: "var(--radius)" }}
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -386,6 +400,36 @@ export default function Home() {
         open={dashboardOpen}
         language={formState.language}
         onClose={() => setDashboardOpen(false)}
+      />
+
+      {/* ===== Custom confirm dialog (replaces browser confirm()) ===== */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title={
+          formState.language === "fr"
+            ? "Supprimer ce document ?"
+            : "Delete this document?"
+        }
+        message={
+          deleteTarget
+            ? formState.language === "fr"
+              ? `Êtes-vous sûr de vouloir supprimer "${deleteTarget.quoteNumber} — ${deleteTarget.fullName}" ?${
+                  deleteTarget.docType === "facture"
+                    ? " Le devis original repassera au statut « saved »."
+                    : ""
+                }`
+              : `Are you sure you want to delete "${deleteTarget.quoteNumber} — ${deleteTarget.fullName}"?${
+                  deleteTarget.docType === "facture"
+                    ? " The original quote will revert to \"saved\" status."
+                    : ""
+                }`
+            : ""
+        }
+        confirmLabel={formState.language === "fr" ? "Supprimer" : "Delete"}
+        cancelLabel={formState.language === "fr" ? "Annuler" : "Cancel"}
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
       />
     </div>
   );

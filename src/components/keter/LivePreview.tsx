@@ -1,18 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { renderDocumentHtml, type DocumentPayload } from "./document-html";
 
 /**
  * LivePreview — renders the actual PDF document as TWO SEPARATE page containers.
  *
  * Each page is its own white "sheet" with its own shadow, stacked vertically
- * with a visible gray gap between them. This makes it clear they are two
- * separate pages, not one continuous page.
- *
- * Implementation: render the full HTML once in a hidden iframe to extract
- * the page 1 and page 2 DOM separately, OR split the HTML string at the
- * page boundary and render each in its own iframe.
+ * with a small gray gap between them. Scale is responsive:
+ *   - Mobile (< 640px):  0.40
+ *   - Tablet (< 1024px): 0.55
+ *   - Desktop (≥ 1024px): 0.80
  */
 export function LivePreview({ payload }: { payload: DocumentPayload }) {
   const { page1Html, page2Html } = useMemo(() => {
@@ -25,24 +23,56 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
     // Split at the "PAGE 2" comment marker
     const splitMarker = "<!-- ============ PAGE 2 ============ -->";
     const parts = full.split(splitMarker);
-    // parts[0] = everything before the marker (includes <head>, <body>, and page 1 div)
-    // parts[1] = everything after the marker (includes page 2 div + closing tags)
 
-    // Page 1: take parts[0], extract just the body content (the page 1 div),
-    // and wrap it in a fresh HTML doc with the same <head>
+    // Page 1: extract body content from parts[0]
     const body1Match = parts[0].match(/<body>([\s\S]*)$/);
     const body1Content = body1Match ? body1Match[1] : parts[0];
     const page1Html = `<!DOCTYPE html><html lang="${payload.language}">${head}<body>${body1Content}</body></html>`;
 
-    // Page 2: take parts[1], extract just the body content (the page 2 div),
-    // and wrap it in a fresh HTML doc with the same <head>
+    // Page 2: use parts[1], clean closing tags
     const body2Content = parts[1] || "";
-    // Remove the closing </body></html> if present (we'll add our own)
     const body2Clean = body2Content.replace(/<\/body>\s*<\/html>\s*$/, "");
     const page2Html = `<!DOCTYPE html><html lang="${payload.language}">${head}<body>${body2Clean}</body></html>`;
 
     return { page1Html, page2Html };
   }, [payload]);
+
+  // Responsive scale
+  const [scale, setScale] = useState(0.80);
+
+  useEffect(() => {
+    const updateScale = () => {
+      const w = window.innerWidth;
+      if (w < 640) setScale(0.40);
+      else if (w < 1024) setScale(0.55);
+      else setScale(0.80);
+    };
+    updateScale();
+    window.addEventListener("resize", updateScale);
+    return () => window.removeEventListener("resize", updateScale);
+  }, []);
+
+  // Negative margin compensates for the unscaled portion so pages sit close
+  const marginBottom = `-${297 * (1 - scale)}mm`;
+
+  const pageWrapperStyle: React.CSSProperties = {
+    transform: `scale(${scale})`,
+    transformOrigin: "top center",
+    width: "210mm",
+    height: "297mm",
+    marginBottom,
+    flexShrink: 0,
+  };
+
+  const iframeStyle: React.CSSProperties = {
+    width: "210mm",
+    height: "297mm",
+    border: "none",
+    display: "block",
+    background: "white",
+    overflow: "hidden",
+    boxShadow: "0 4px 24px rgba(0,0,40,0.18)",
+  };
 
   return (
     <div className="k-card !p-0 overflow-hidden h-full flex flex-col">
@@ -59,61 +89,25 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
         </div>
       </div>
 
-      {/* Preview area — TWO SEPARATE page containers with small gray gap between them */}
-      <div className="flex-1 overflow-auto bg-[#F3F4F6] p-4 md:p-6">
+      {/* Preview area — TWO SEPARATE page containers with small gray gap */}
+      <div className="flex-1 overflow-auto bg-[#F3F4F6] p-3 md:p-6">
         <div className="flex flex-col items-center gap-2">
-          {/* PAGE 1 — its own white sheet with shadow */}
-          <div
-            style={{
-              transform: "scale(0.80)",
-              transformOrigin: "top center",
-              width: "210mm",
-              height: "297mm",
-              // Margin-bottom compensates for the scale so the next page sits close
-              marginBottom: "-59.4mm", // 297mm * 0.20 = 59.4mm (the unscaled portion)
-              flexShrink: 0,
-            }}
-          >
+          {/* PAGE 1 */}
+          <div style={pageWrapperStyle}>
             <iframe
               title="Document preview — Page 1"
               srcDoc={page1Html}
               scrolling="no"
-              style={{
-                width: "210mm",
-                height: "297mm",
-                border: "none",
-                display: "block",
-                background: "white",
-                overflow: "hidden",
-                boxShadow: "0 4px 24px rgba(0,0,40,0.18)",
-              }}
+              style={iframeStyle}
             />
           </div>
-
-          {/* PAGE 2 — its own white sheet with shadow, clearly separated */}
-          <div
-            style={{
-              transform: "scale(0.80)",
-              transformOrigin: "top center",
-              width: "210mm",
-              height: "297mm",
-              marginBottom: "-59.4mm", // compensate for scale
-              flexShrink: 0,
-            }}
-          >
+          {/* PAGE 2 */}
+          <div style={pageWrapperStyle}>
             <iframe
               title="Document preview — Page 2"
               srcDoc={page2Html}
               scrolling="no"
-              style={{
-                width: "210mm",
-                height: "297mm",
-                border: "none",
-                display: "block",
-                background: "white",
-                overflow: "hidden",
-                boxShadow: "0 4px 24px rgba(0,0,40,0.18)",
-              }}
+              style={iframeStyle}
             />
           </div>
         </div>
