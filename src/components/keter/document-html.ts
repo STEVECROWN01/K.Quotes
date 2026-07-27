@@ -142,12 +142,13 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       ];
 
   // Build invoice-only payment block (for facture) — replaces Conditions/Bon pour accord
+  const paidClass = (p.paymentStatus === "Payé" || p.paymentStatus === "Paid") ? " paid" : "";
   const invoicePaymentBlock =
     p.docType === "facture"
       ? `
-      <div class="invoice-payment-block">
+      <div class="invoice-payment-block ${items.length > 1 ? 'conditions-block-multi' : ''}">
         <div class="ipb-title">${lang === "fr" ? "Paiement" : "Payment"}</div>
-        <div class="ipb-row"><span class="ipb-label">${t.paymentStatus}</span><span class="ipb-value">${p.paymentStatus ?? t.paid}</span></div>
+        <div class="ipb-row"><span class="ipb-label">${t.paymentStatus}</span><span class="ipb-value${paidClass}">${p.paymentStatus ?? t.paid}</span></div>
         <div class="ipb-row"><span class="ipb-label">${t.modePaiement}</span><span class="ipb-value">${p.paymentMode}</span></div>
         <div class="ipb-row"><span class="ipb-label">${t.paymentDate}</span><span class="ipb-value">${paymentDateLabel || dateLabel}</span></div>
       </div>`
@@ -186,7 +187,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .page:last-child { page-break-after: auto; }
 
-  /* ---- Watermark (very faint, barely visible — matches reference) ---- */
+  /* ---- Watermark (barely visible) ---- */
   .watermark {
     position: absolute;
     top: 50%;
@@ -194,7 +195,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     transform: translate(-50%, -50%);
     width: 60%;
     max-width: 150mm;
-    opacity: 0.03;
+    opacity: 0.06;
     pointer-events: none;
     z-index: 0;
   }
@@ -225,7 +226,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-weight: 400;
   }
   .doc-header-right { display: flex; align-items: flex-start; }
-  .doc-logo { width: 16mm; height: auto; }
+  .doc-logo { width: 14mm; height: auto; }
   .doc-logo-container {
     display: flex;
     flex-direction: column;
@@ -456,11 +457,14 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
 
   /* ---- Invoice payment block ---- */
   .invoice-payment-block {
-    background: #fafafa;
-    border: 1px solid #e5e7eb;
+    background: rgba(75, 138, 107, 0.08);
+    border: 1px solid rgba(75, 138, 107, 0.3);
     padding: 8px 12px;
-    margin-top: 6mm;
+    margin-top: 12mm;
     border-radius: 2px;
+  }
+  .invoice-payment-block.conditions-block-multi {
+    margin-top: 6mm;
   }
   .ipb-title {
     font-size: 11pt;
@@ -478,6 +482,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .ipb-label { color: #6b7280; font-weight: 500; }
   .ipb-value { color: #000000; font-weight: 600; }
+  .ipb-value.paid { color: #2E7D32; font-weight: 700; }
 
   /* ---- Footer ---- */
   .doc-footer {
