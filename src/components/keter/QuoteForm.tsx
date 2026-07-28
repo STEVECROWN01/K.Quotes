@@ -7,6 +7,7 @@ import {
   DEFAULT_PAYMENT_LINK,
 } from "@/lib/defaults";
 import { UI, buildDocNumber, quoteToInvoiceNumber, CURRENCY_OPTIONS, getCurrencySymbol } from "@/lib/i18n";
+import { COUNTRIES, findCountry, formatCountryLabel } from "@/lib/countries";
 import type { Language, DocType, ServiceType } from "@/lib/services";
 import type { DocumentPayload } from "./document-html";
 
@@ -322,44 +323,88 @@ export function QuoteForm({
               placeholder={state.language === "fr" ? "Jean Dupont" : "John Doe"}
             />
           </div>
-          <div>
-            <label className="k-label" htmlFor="city">
-              {t.city}
-            </label>
-            <input
-              id="city"
-              type="text"
-              className="k-input"
-              value={state.city}
-              onChange={(e) => update("city", e.target.value)}
-              placeholder="Paris"
-            />
-          </div>
+          {/* Country dropdown (left) + Town dropdown (right) */}
           <div>
             <label className="k-label" htmlFor="country">
               {t.country}
             </label>
-            <input
+            <select
               id="country"
-              type="text"
               className="k-input"
               value={state.country}
-              onChange={(e) => update("country", e.target.value)}
-              placeholder="France"
-            />
+              onChange={(e) => {
+                const countryName = e.target.value;
+                update("country", countryName);
+                // Auto-set currency and phone code based on country
+                const country = findCountry(countryName);
+                if (country) {
+                  update("currency", country.currency);
+                  // Reset city when country changes
+                  update("city", "");
+                  // Update phone to include country code if phone is empty or doesn't start with +
+                  if (!state.phone || !state.phone.startsWith("+")) {
+                    update("phone", country.phoneCode + " ");
+                  }
+                }
+              }}
+            >
+              <option value="">— {state.language === "fr" ? "Sélectionner un pays" : "Select a country"} —</option>
+              {COUNTRIES.map((c) => (
+                <option key={c.code} value={c.name}>
+                  {formatCountryLabel(c)}
+                </option>
+              ))}
+            </select>
           </div>
+          <div>
+            <label className="k-label" htmlFor="city">
+              {t.city}
+            </label>
+            {state.country ? (
+              <select
+                id="city"
+                className="k-input"
+                value={state.city}
+                onChange={(e) => update("city", e.target.value)}
+              >
+                <option value="">— {state.language === "fr" ? "Sélectionner une ville" : "Select a city"} —</option>
+                {(findCountry(state.country)?.cities ?? []).map((city) => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+            ) : (
+              <select id="city" className="k-input" disabled>
+                <option value="">
+                  {state.language === "fr" ? "Sélectionnez d'abord un pays" : "Select a country first"}
+                </option>
+              </select>
+            )}
+          </div>
+          {/* Phone with country code prefix + flag */}
           <div>
             <label className="k-label" htmlFor="phone">
               {t.phone}
             </label>
-            <input
-              id="phone"
-              type="tel"
-              className="k-input"
-              value={state.phone}
-              onChange={(e) => update("phone", e.target.value)}
-              placeholder="+33 1 23 45 67 89"
-            />
+            <div className="flex">
+              {state.country && (() => {
+                const c = findCountry(state.country);
+                return c ? (
+                  <span className="inline-flex items-center gap-1 px-3 py-2 bg-[#F3F4F6] border border-[#E5E7EB] border-r-0 text-sm text-[#000028] whitespace-nowrap" style={{ borderRadius: "var(--radius) 0 0 var(--radius)" }}>
+                    <span className="text-base">{c.flag}</span>
+                    <span className="font-mono text-xs">{c.phoneCode}</span>
+                  </span>
+                ) : null;
+              })()}
+              <input
+                id="phone"
+                type="tel"
+                className="k-input"
+                style={state.country && findCountry(state.country) ? { borderRadius: "0 var(--radius) var(--radius) 0" } : {}}
+                value={state.phone}
+                onChange={(e) => update("phone", e.target.value)}
+                placeholder={state.language === "fr" ? "Numéro de téléphone" : "Phone number"}
+              />
+            </div>
           </div>
           <div>
             <label className="k-label" htmlFor="email">

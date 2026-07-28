@@ -7,12 +7,22 @@ import { LivePreview } from "@/components/keter/LivePreview";
 import { MyQuotesDialog } from "@/components/keter/MyQuotesDialog";
 import { DashboardDialog } from "@/components/keter/DashboardDialog";
 import { ConfirmDialog } from "@/components/keter/ConfirmDialog";
+import { GenerateInvoiceModal } from "@/components/keter/GenerateInvoiceModal";
 import { UI, buildDocNumber } from "@/lib/i18n";
 import type { QuoteRecord } from "@/lib/storage";
 import { toast } from "sonner";
 
 export default function Home() {
-  const [formState, setFormState] = useState<FormState>(initialFormState);
+  // Load saved form state from localStorage on initial render
+  const [formState, setFormState] = useState<FormState>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("keter_form_state");
+        if (saved) return { ...initialFormState, ...JSON.parse(saved) };
+      } catch {}
+    }
+    return initialFormState;
+  });
   const [editingId, setEditingId] = useState<string | null>(null);
   const [originalState, setOriginalState] = useState<FormState | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -23,15 +33,18 @@ export default function Home() {
   const [deleteTarget, setDeleteTarget] = useState<QuoteRecord | null>(null);
   const [saveChangesConfirm, setSaveChangesConfirm] = useState(false);
   const [revertChangesConfirm, setRevertChangesConfirm] = useState(false);
+  const [invoiceModalQuote, setInvoiceModalQuote] = useState<QuoteRecord | null>(null);
 
   const t = UI[formState.language];
 
   const payload = formStateToPayload(formState);
 
-  // Live-update quote number when client number or doc type changes
+  // Persist form state to localStorage whenever it changes
   useEffect(() => {
-    // already handled in formStateToPayload — no side effect needed
-  }, [formState.clientNumber, formState.docType]);
+    try {
+      localStorage.setItem("keter_form_state", JSON.stringify(formState));
+    } catch {}
+  }, [formState]);
 
   const handleGeneratePdf = useCallback(async () => {
     setGenerating(true);
@@ -306,22 +319,31 @@ export default function Home() {
   }, []);
 
   const handleGenerateInvoice = useCallback(
-    async (q: QuoteRecord) => {
+    (q: QuoteRecord) => {
+      setInvoiceModalQuote(q);
+    },
+    []
+  );
+
+  const confirmGenerateInvoice = useCallback(
+    async (paymentMethod: string) => {
+      if (!invoiceModalQuote) return;
       try {
         const paymentDate = new Date().toISOString().slice(0, 10);
-        const res = await fetch(`/api/quotes/${q.id}/invoice`, {
+        const res = await fetch(`/api/quotes/${invoiceModalQuote.id}/invoice`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             paymentStatus: "Payé",
             paymentDate,
+            paymentMethod,
           }),
         });
         if (!res.ok) throw new Error("Failed to generate invoice");
         const d = await res.json();
         const invoice = d.invoice as QuoteRecord;
-        // Load invoice into form
         setFormState(quoteRecordToFormState(invoice));
+        setInvoiceModalQuote(null);
         setMyQuotesOpen(false);
         toast.success(
           formState.language === "fr"
@@ -332,7 +354,7 @@ export default function Home() {
         toast.error(e.message);
       }
     },
-    [formState.language]
+    [invoiceModalQuote, formState.language]
   );
 
   const handleDelete = useCallback(
@@ -611,6 +633,15 @@ export default function Home() {
         variant="danger"
         onConfirm={performRevertChanges}
         onCancel={() => setRevertChangesConfirm(false)}
+      />
+
+      {/* ===== Generate Invoice modal with payment method selection ===== */}
+      <GenerateInvoiceModal
+        open={!!invoiceModalQuote}
+        language={formState.language}
+        quote={invoiceModalQuote}
+        onClose={() => setInvoiceModalQuote(null)}
+        onConfirm={confirmGenerateInvoice}
       />
     </div>
   );
