@@ -309,8 +309,6 @@ export default function Home() {
     [formState.language]
   );
 
-  const [deleteTarget, setDeleteTarget] = useState<QuoteRecord | null>(null);
-
   const handleDelete = useCallback(
     (q: QuoteRecord) => {
       setDeleteTarget(q);
