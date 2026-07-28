@@ -6,6 +6,7 @@ export async function GET() {
     const quotes = await listQuotes();
     return NextResponse.json({ quotes });
   } catch (e: any) {
+    console.error("[quotes GET] error:", e.message);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }
@@ -13,6 +14,8 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log("[quotes POST] received body with id:", body.id, "quoteNumber:", body.quoteNumber);
+    
     // Basic shape check
     const required = [
       "quoteNumber", "docType", "language", "clientNumber", "date",
@@ -25,8 +28,10 @@ export async function POST(req: NextRequest) {
       }
     }
     const saved = await saveQuote(body as Omit<QuoteRecord, "id" | "createdAt" | "updatedAt" | "status"> & { id?: string; status?: string });
+    console.log("[quotes POST] saved successfully, id:", saved.id);
     return NextResponse.json({ quote: saved });
   } catch (e: any) {
+    console.error("[quotes POST] error:", e.message);
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
 }

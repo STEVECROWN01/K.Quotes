@@ -196,26 +196,52 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      const data = await res.json();
       if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: "Unknown" }));
-        throw new Error(err.error || "Failed to save changes");
+        throw new Error(data.error || "Failed to save changes");
       }
-      // If email self-copy is checked, also generate a PDF and email it
+      
+      // If email self-copy is checked, generate PDF and send email
+      let emailSent = false;
       if (formState.emailSelfCopy) {
         try {
-          await fetch("/api/pdf", {
+          const pdfRes = await fetch("/api/pdf", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ ...payload, emailSelfCopy: true, saveToDb: false }),
           });
+          if (pdfRes.ok) {
+            emailSent = pdfRes.headers.get("X-Email-Sent") === "1";
+          }
         } catch (e) {
-          // Email failure is non-blocking — the save already succeeded
           console.warn("Email send failed:", e);
         }
       }
+      
+      // Update originalState so form is no longer dirty
       const newFs = { ...formState };
       setOriginalState(newFs);
-      toast.success(formState.language === "fr" ? "Modifications enregistrées" : "Changes saved");
+      
+      // Show appropriate toast
+      if (formState.emailSelfCopy && emailSent) {
+        toast.success(
+          formState.language === "fr"
+            ? "Modifications enregistrées + copie envoyée par email"
+            : "Changes saved + copy emailed"
+        );
+      } else if (formState.emailSelfCopy) {
+        toast.success(
+          formState.language === "fr"
+            ? "Modifications enregistrées (email non envoyé)"
+            : "Changes saved (email not sent)"
+        );
+      } else {
+        toast.success(
+          formState.language === "fr"
+            ? "Modifications enregistrées"
+            : "Changes saved"
+        );
+      }
     } catch (e: any) {
       toast.error(e.message);
     } finally {

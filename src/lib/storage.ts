@@ -178,22 +178,31 @@ export async function saveQuote(
   const row = recordToRow({ ...input, status });
 
   if (input.id) {
+    console.log("[saveQuote] UPDATE — id:", input.id, "quoteNumber:", input.quoteNumber);
     const { data, error } = await supabase
       .from("quotes")
       .update(row)
       .eq("id", input.id)
       .select()
       .single();
-    if (error) throw new Error(error.message);
+    if (error) {
+      console.error("[saveQuote] UPDATE error:", error.message);
+      throw new Error(error.message);
+    }
+    console.log("[saveQuote] UPDATE success, returned id:", (data as DbRow)?.id);
     return rowToRecord(data as DbRow);
   }
 
+  console.log("[saveQuote] INSERT — quoteNumber:", input.quoteNumber);
   const { data, error } = await supabase
     .from("quotes")
     .insert(row)
     .select()
     .single();
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("[saveQuote] INSERT error:", error.message);
+    throw new Error(error.message);
+  }
   return rowToRecord(data as DbRow);
 }
 
