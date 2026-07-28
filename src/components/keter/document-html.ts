@@ -397,17 +397,12 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     text-transform: uppercase;
     letter-spacing: 0.5px;
     border: none;
+    border-right: none;
   }
-  .services-table tfoot td.total-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-  }
-  .services-table tfoot td.total-row .total-label {
+  .services-table tfoot td.total-label {
     text-align: left;
   }
-  .services-table tfoot td.total-row .total-amount {
+  .services-table tfoot td.total-amount {
     text-align: right;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
@@ -677,10 +672,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="5" class="total-row">
-            <span class="total-label">TOTAL</span>
-            <span class="total-amount">${formatCurrency(grandTotal, lang, p.currency)}</span>
-          </td>
+          <td colspan="4" class="total-label">TOTAL</td>
+          <td class="total-amount">${formatCurrency(grandTotal, lang, p.currency)}</td>
         </tr>
       </tfoot>
     </table>
