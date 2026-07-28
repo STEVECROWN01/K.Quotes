@@ -387,7 +387,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     line-height: 1.4;
   }
 
-  /* TOTAL row — single undivided bar, TOTAL on left, price on right */
+  /* TOTAL row — single undivided bar, no vertical dividers */
+  .services-table tfoot tr {
+    background: #000000;
+  }
   .services-table tfoot td {
     background: #000000;
     color: #ffffff;
@@ -396,16 +399,23 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-size: 10.5pt;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    border: none;
-    border-right: none;
+    border: none !important;
+    border-right: none !important;
+    border-left: none !important;
   }
   .services-table tfoot td.total-label {
     text-align: left;
+    width: 50%;
+    white-space: nowrap;
   }
   .services-table tfoot td.total-amount {
     text-align: right;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
+    width: 50%;
+    /* Allow the price to use more space and push left if needed */
+    min-width: 0;
+    padding-left: 4px;
   }
 
   /* ---- Conditions / signature block ---- */
@@ -672,8 +682,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="4" class="total-label">TOTAL</td>
-          <td class="total-amount">${formatCurrency(grandTotal, lang, p.currency)}</td>
+          <td colspan="3" class="total-label">TOTAL</td>
+          <td colspan="2" class="total-amount">${formatCurrency(grandTotal, lang, p.currency)}</td>
         </tr>
       </tfoot>
     </table>
