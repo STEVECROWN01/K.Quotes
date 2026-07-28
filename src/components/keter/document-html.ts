@@ -142,13 +142,16 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
       ];
 
   // Build invoice-only payment block (for facture) — replaces Conditions/Bon pour accord
-  const paidClass = (p.paymentStatus === "Payé" || p.paymentStatus === "Paid") ? " paid" : "";
+  const isPaid = (p.paymentStatus === "Payé" || p.paymentStatus === "Paid");
   const invoicePaymentBlock =
     p.docType === "facture"
       ? `
       <div class="invoice-payment-block ${items.length > 1 ? 'conditions-block-multi' : ''}">
         <div class="ipb-title">${lang === "fr" ? "Paiement" : "Payment"}</div>
-        <div class="ipb-row"><span class="ipb-label">${t.paymentStatus}</span><span class="ipb-value${paidClass}">${p.paymentStatus ?? t.paid}</span></div>
+        <div class="ipb-row">
+          <span class="ipb-label">${t.paymentStatus}</span>
+          <span class="ipb-value">${isPaid ? `<span class="paid-stamp">${lang === "fr" ? "PAYÉ" : "PAID"}</span>` : (p.paymentStatus ?? t.paid)}</span>
+        </div>
         <div class="ipb-row"><span class="ipb-label">${t.modePaiement}</span><span class="ipb-value">${p.paymentMode}</span></div>
         <div class="ipb-row"><span class="ipb-label">${t.paymentDate}</span><span class="ipb-value">${paymentDateLabel || dateLabel}</span></div>
       </div>`
@@ -432,7 +435,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .cb-left .cb-title, .cb-right .cb-title {
     font-size: 10.5pt;
     font-weight: 700;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
     color: #000000;
   }
   .cb-left .cb-row {
@@ -494,6 +497,22 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .ipb-label { color: #6b7280; font-weight: 500; }
   .ipb-value { color: #000000; font-weight: 600; }
   .ipb-value.paid { color: #2E7D32; font-weight: 700; }
+
+  /* PAID stamp — green, oblique, cachet style */
+  .paid-stamp {
+    display: inline-block;
+    padding: 3px 12px;
+    border: 2.5px solid #2E7D32;
+    color: #2E7D32;
+    font-family: 'Inter', sans-serif;
+    font-size: 13pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transform: rotate(-8deg);
+    border-radius: 4px;
+    background: rgba(46, 125, 50, 0.05);
+  }
 
   /* ---- Footer ---- */
   .doc-footer {

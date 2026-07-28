@@ -334,24 +334,25 @@ export function QuoteForm({
               value={state.country}
               onChange={(e) => {
                 const countryName = e.target.value;
-                update("country", countryName);
-                // Auto-set currency and phone code based on country
                 const country = findCountry(countryName);
+                // Batch all updates in one setState call to avoid stale state
+                const newState: FormState = {
+                  ...state,
+                  country: countryName,
+                  city: "", // reset city when country changes
+                };
                 if (country) {
-                  update("currency", country.currency);
-                  // Reset city when country changes
-                  update("city", "");
-                  // Update phone to include country code if phone is empty or doesn't start with +
-                  if (!state.phone || !state.phone.startsWith("+")) {
-                    update("phone", country.phoneCode + " ");
-                  }
+                  newState.currency = country.currency;
+                  // Set phone to country code prefix
+                  newState.phone = country.phoneCode + " ";
                 }
+                setState(newState);
               }}
             >
-              <option value="">— {state.language === "fr" ? "Sélectionner un pays" : "Select a country"} —</option>
+              <option value="">{state.language === "fr" ? "Sélectionner un pays" : "Select a country"}</option>
               {COUNTRIES.map((c) => (
                 <option key={c.code} value={c.name}>
-                  {formatCountryLabel(c)}
+                  {c.name} ({c.code})
                 </option>
               ))}
             </select>
@@ -360,27 +361,24 @@ export function QuoteForm({
             <label className="k-label" htmlFor="city">
               {t.city}
             </label>
-            {state.country ? (
-              <select
-                id="city"
-                className="k-input"
-                value={state.city}
-                onChange={(e) => update("city", e.target.value)}
-              >
-                <option value="">— {state.language === "fr" ? "Sélectionner une ville" : "Select a city"} —</option>
-                {(findCountry(state.country)?.cities ?? []).map((city) => (
-                  <option key={city} value={city}>{city}</option>
-                ))}
-              </select>
-            ) : (
-              <select id="city" className="k-input" disabled>
-                <option value="">
-                  {state.language === "fr" ? "Sélectionnez d'abord un pays" : "Select a country first"}
-                </option>
-              </select>
-            )}
+            <select
+              id="city"
+              className="k-input"
+              value={state.city}
+              onChange={(e) => update("city", e.target.value)}
+              disabled={!state.country}
+            >
+              <option value="">
+                {state.country
+                  ? (state.language === "fr" ? "Sélectionner une ville" : "Select a city")
+                  : (state.language === "fr" ? "Sélectionnez d'abord un pays" : "Select a country first")}
+              </option>
+              {(findCountry(state.country)?.cities ?? []).map((city) => (
+                <option key={city} value={city}>{city}</option>
+              ))}
+            </select>
           </div>
-          {/* Phone with country code prefix + flag */}
+          {/* Phone with country code prefix + flag (SVG from CDN) */}
           <div>
             <label className="k-label" htmlFor="phone">
               {t.phone}
@@ -389,8 +387,17 @@ export function QuoteForm({
               {state.country && (() => {
                 const c = findCountry(state.country);
                 return c ? (
-                  <span className="inline-flex items-center gap-1 px-3 py-2 bg-[#F3F4F6] border border-[#E5E7EB] border-r-0 text-sm text-[#000028] whitespace-nowrap" style={{ borderRadius: "var(--radius) 0 0 var(--radius)" }}>
-                    <span className="text-base">{c.flag}</span>
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2.5 py-2 bg-[#F3F4F6] border border-[#E5E7EB] border-r-0 text-sm text-[#000028] whitespace-nowrap"
+                    style={{ borderRadius: "var(--radius) 0 0 var(--radius)" }}
+                  >
+                    <img
+                      src={`https://flagcdn.com/16x12/${c.code.toLowerCase()}.png`}
+                      width={16}
+                      height={12}
+                      alt={c.code}
+                      style={{ display: "block", borderRadius: 1 }}
+                    />
                     <span className="font-mono text-xs">{c.phoneCode}</span>
                   </span>
                 ) : null;

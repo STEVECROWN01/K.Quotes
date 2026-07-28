@@ -108,9 +108,18 @@ export function GenerateInvoiceModal({ open, language, quote, onClose, onConfirm
           {/* Mobile payment methods — country-specific */}
           {mobilePayments.length > 0 && (
             <>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280] mt-4 mb-2">
+              <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-[#6B7280] mt-4 mb-2">
+                {country && (
+                  <img
+                    src={`https://flagcdn.com/16x12/${country.code.toLowerCase()}.png`}
+                    width={14}
+                    height={10}
+                    alt={country.code}
+                    style={{ display: "block", borderRadius: 1 }}
+                  />
+                )}
                 {fr ? "Transactions mobiles" : "Mobile transactions"}
-                {country && ` — ${country.flag} ${country.name}`}
+                {country && ` — ${country.name}`}
               </div>
               {mobilePayments.map((mp) => (
                 <label
@@ -142,6 +151,13 @@ export function GenerateInvoiceModal({ open, language, quote, onClose, onConfirm
               {fr
                 ? "⚠️ Aucun pays sélectionné dans le devis. Sélectionnez un pays pour voir les méthodes de paiement mobile disponibles."
                 : "⚠️ No country selected in the quote. Select a country to see available mobile payment methods."}
+            </p>
+          )}
+          {mobilePayments.length === 0 && quote.country && (
+            <p className="text-xs text-[#6B7280] italic mt-2">
+              {fr
+                ? "Aucune méthode de paiement mobile disponible pour ce pays."
+                : "No mobile payment methods available for this country."}
             </p>
           )}
         </div>
