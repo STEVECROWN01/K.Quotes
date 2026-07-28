@@ -20,6 +20,9 @@ export default function Home() {
   const [myQuotesOpen, setMyQuotesOpen] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [mobilePreviewOpen, setMobilePreviewOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<QuoteRecord | null>(null);
+  const [saveChangesConfirm, setSaveChangesConfirm] = useState(false);
+  const [revertChangesConfirm, setRevertChangesConfirm] = useState(false);
 
   const t = UI[formState.language];
 
@@ -148,9 +151,16 @@ export default function Home() {
     }
   }, [payload, t.saved]);
 
-  // Save changes to an existing quote (edit mode)
-  const handleSaveChanges = useCallback(async () => {
+  // Save changes to an existing quote (edit mode) — opens confirmation modal
+  const handleSaveChanges = useCallback(() => {
     if (!editingId) return;
+    setSaveChangesConfirm(true);
+  }, [editingId]);
+
+  // Actually perform the save after confirmation
+  const performSaveChanges = useCallback(async () => {
+    if (!editingId) return;
+    setSaveChangesConfirm(false);
     setSaving(true);
     try {
       const body = {
@@ -190,6 +200,19 @@ export default function Home() {
         const err = await res.json().catch(() => ({ error: "Unknown" }));
         throw new Error(err.error || "Failed to save changes");
       }
+      // If email self-copy is checked, also generate a PDF and email it
+      if (formState.emailSelfCopy) {
+        try {
+          await fetch("/api/pdf", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...payload, emailSelfCopy: true, saveToDb: false }),
+          });
+        } catch (e) {
+          // Email failure is non-blocking — the save already succeeded
+          console.warn("Email send failed:", e);
+        }
+      }
       const newFs = { ...formState };
       setOriginalState(newFs);
       toast.success(formState.language === "fr" ? "Modifications enregistrées" : "Changes saved");
@@ -200,8 +223,14 @@ export default function Home() {
     }
   }, [editingId, payload, formState]);
 
-  // Revert changes back to original state
+  // Revert changes — opens confirmation modal
   const handleRevertChanges = useCallback(() => {
+    setRevertChangesConfirm(true);
+  }, []);
+
+  // Actually perform the revert after confirmation
+  const performRevertChanges = useCallback(() => {
+    setRevertChangesConfirm(false);
     if (originalState) {
       setFormState(originalState);
       toast.success(formState.language === "fr" ? "Modifications annulées" : "Changes reverted");
@@ -510,6 +539,54 @@ export default function Home() {
         variant="danger"
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}
+      />
+
+      {/* ===== Save Changes confirmation modal ===== */}
+      <ConfirmDialog
+        open={saveChangesConfirm}
+        title={
+          formState.language === "fr"
+            ? "Enregistrer les modifications ?"
+            : "Save changes?"
+        }
+        message={
+          formState.language === "fr"
+            ? `Voulez-vous enregistrer les modifications apportées à ce document ?${
+                formState.emailSelfCopy
+                  ? " Une copie du PDF sera envoyée par email."
+                  : ""
+              }`
+            : `Do you want to save the changes made to this document?${
+                formState.emailSelfCopy
+                  ? " A copy of the PDF will be sent by email."
+                  : ""
+              }`
+        }
+        confirmLabel={formState.language === "fr" ? "Enregistrer" : "Save"}
+        cancelLabel={formState.language === "fr" ? "Annuler" : "Cancel"}
+        variant="default"
+        onConfirm={performSaveChanges}
+        onCancel={() => setSaveChangesConfirm(false)}
+      />
+
+      {/* ===== Revert Changes confirmation modal ===== */}
+      <ConfirmDialog
+        open={revertChangesConfirm}
+        title={
+          formState.language === "fr"
+            ? "Annuler les modifications ?"
+            : "Revert changes?"
+        }
+        message={
+          formState.language === "fr"
+            ? "Voulez-vous annuler toutes les modifications non enregistrées et revenir à la version précédente ?"
+            : "Do you want to discard all unsaved changes and revert to the previous version?"
+        }
+        confirmLabel={formState.language === "fr" ? "Annuler les modifications" : "Revert changes"}
+        cancelLabel={formState.language === "fr" ? "Garder les modifications" : "Keep changes"}
+        variant="danger"
+        onConfirm={performRevertChanges}
+        onCancel={() => setRevertChangesConfirm(false)}
       />
     </div>
   );

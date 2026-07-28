@@ -444,8 +444,8 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .cb-left .cb-row .lbl { color: #000000; font-weight: 600; }
   .cb-left .cb-row .val { color: #000000; font-weight: 400; }
   .cb-right {
-    padding-left: 4mm;
-    border-left: 1px solid #e5e7eb;
+    padding-left: 0;
+    border-left: none;
   }
   .cb-right .cb-title {
     margin-bottom: 8mm;
