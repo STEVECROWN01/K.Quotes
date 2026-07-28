@@ -7,7 +7,7 @@
     "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "start": "HOSTNAME=0.0.0.0 PORT=${PORT:-3000} NODE_ENV=production node .next/standalone/server.js",
     "start:bun": "HOSTNAME=0.0.0.0 PORT=${PORT:-3000} NODE_ENV=production bun .next/standalone/server.js",
-    "postinstall": "puppeteer browsers install chrome",
+    "postinstall": "puppeteer browsers install chrome || echo 'Chrome install skipped (will use system Chrome at runtime)'",
     "lint": "eslint ."
   },
   "puppeteer": {

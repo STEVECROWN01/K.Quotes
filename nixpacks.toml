@@ -8,6 +8,7 @@
 # Also installs Noto Sans for font fallback (Inter / Fraunces load from Google Fonts at runtime).
 aptPkgs = [
   "ca-certificates",
+  "chromium",
   "fonts-liberation",
   "fonts-noto-color-emoji",
   "libasound2",
@@ -43,12 +44,13 @@ aptPkgs = [
 ]
 
 [phases.install]
-# The postinstall hook in package.json installs Chrome into node_modules/.cache/puppeteer
-# Make sure the cache directory survives between phases
-cmds = ["bun install || npm install"]
+# Install deps. The postinstall hook tries to download Chrome but may fail
+# in restricted environments — the || ensures the build continues.
+# Chrome will be found at runtime via PUPPETEER_EXECUTABLE_PATH or system path.
+cmds = ["npm install --legacy-peer-deps"]
 
 [phases.build]
-cmds = ["bun run build || npm run build"]
+cmds = ["npm run build"]
 
 [start]
 cmd = "HOSTNAME=0.0.0.0 PORT=${PORT:-8080} NODE_ENV=production node .next/standalone/server.js"
