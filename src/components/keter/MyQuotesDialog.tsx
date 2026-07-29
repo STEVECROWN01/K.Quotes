@@ -54,7 +54,9 @@ export function MyQuotesDialog({
       setLoading(true);
       setError(null);
       try {
-        const r = await fetch(`/api/quotes?t=${Date.now()}`);
+        const r = await fetch(`/api/quotes?t=${Date.now()}`, {
+          headers: { "Cache-Control": "no-cache" },
+        });
         const d = await r.json();
         if (!cancelled) {
           if (!r.ok) {

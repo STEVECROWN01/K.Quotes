@@ -11,11 +11,12 @@ interface Props {
   language: Language;
   quote: QuoteRecord | null;
   onClose: () => void;
-  onConfirm: (paymentMethod: string) => void;
+  onConfirm: (paymentMethod: string, paymentDate: string) => void;
 }
 
 export function GenerateInvoiceModal({ open, language, quote, onClose, onConfirm }: Props) {
   const [selectedMethod, setSelectedMethod] = useState<string>("");
+  const [paymentDate, setPaymentDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(false);
 
   if (!open || !quote) return null;
@@ -28,7 +29,7 @@ export function GenerateInvoiceModal({ open, language, quote, onClose, onConfirm
   const handleConfirm = async () => {
     if (!selectedMethod) return;
     setLoading(true);
-    await onConfirm(selectedMethod);
+    await onConfirm(selectedMethod, paymentDate);
     setLoading(false);
     setSelectedMethod("");
   };
@@ -160,6 +161,20 @@ export function GenerateInvoiceModal({ open, language, quote, onClose, onConfirm
                 : "No mobile payment methods available for this country."}
             </p>
           )}
+        </div>
+
+        {/* Payment date */}
+        <div className="mt-4">
+          <label className="k-label" htmlFor="paymentDate">
+            {fr ? "Date de règlement" : "Payment date"}
+          </label>
+          <input
+            id="paymentDate"
+            type="date"
+            className="k-input"
+            value={paymentDate}
+            onChange={(e) => setPaymentDate(e.target.value)}
+          />
         </div>
 
         {/* Footer */}

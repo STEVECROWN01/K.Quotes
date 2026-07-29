@@ -42,7 +42,7 @@ export type FormState = {
 
 export const initialFormState: FormState = {
   docType: "devis",
-  language: "fr",
+  language: "fr", // Document language defaults to French
   clientNumber: "",
   date: new Date().toISOString().slice(0, 10),
   fullName: "",
@@ -70,6 +70,11 @@ export const initialFormState: FormState = {
 
 export function formStateToPayload(f: FormState): DocumentPayload {
   const clientNum = parseInt(f.clientNumber, 10) || 0;
+  // Prepend country code to phone for the document
+  const country = f.country ? findCountry(f.country) : null;
+  const phoneWithCode = f.phone
+    ? (country ? `${country.phoneCode} ${f.phone}` : f.phone)
+    : null;
   return {
     docType: f.docType,
     language: f.language,
@@ -78,7 +83,7 @@ export function formStateToPayload(f: FormState): DocumentPayload {
     fullName: f.fullName,
     city: f.city || null,
     country: f.country || null,
-    phone: f.phone || null,
+    phone: phoneWithCode,
     email: f.email || null,
     service: f.service,
     priceCv: f.priceCv ? parseFloat(f.priceCv) : null,
@@ -99,6 +104,12 @@ export function formStateToPayload(f: FormState): DocumentPayload {
 }
 
 export function quoteRecordToFormState(q: any): FormState {
+  // Strip country code from phone when loading (the prefix box shows it separately)
+  const country = q.country ? findCountry(q.country) : null;
+  let phoneLocal = q.phone ?? "";
+  if (country && phoneLocal && phoneLocal.startsWith(country.phoneCode)) {
+    phoneLocal = phoneLocal.substring(country.phoneCode.length).trim();
+  }
   return {
     docType: q.docType,
     language: q.language,
@@ -107,7 +118,7 @@ export function quoteRecordToFormState(q: any): FormState {
     fullName: q.fullName,
     city: q.city ?? "",
     country: q.country ?? "",
-    phone: q.phone ?? "",
+    phone: phoneLocal,
     email: q.email ?? "",
     service: q.service,
     priceCv: q.priceCv != null ? String(q.priceCv) : "",
@@ -153,7 +164,8 @@ export function QuoteForm({
   generating,
   saving,
 }: Props) {
-  const t = UI[state.language];
+  // UI is always in English; document language is separate
+  const t = UI["en"];
 
   const update = useCallback(
     <K extends keyof FormState>(key: K, value: FormState[K]) => {
@@ -322,7 +334,7 @@ export function QuoteForm({
               placeholder={state.language === "fr" ? "Jean Dupont" : "John Doe"}
             />
           </div>
-          {/* Country dropdown — full width */}
+          {/* Country dropdown — full width, shows flag + name */}
           <div className="md:col-span-2">
             <label className="k-label" htmlFor="country">
               {t.country}
@@ -334,7 +346,7 @@ export function QuoteForm({
               onChange={(e) => {
                 const countryName = e.target.value;
                 const country = findCountry(countryName);
-                // Batch all updates in one setState call to avoid stale state
+                // Batch all updates in one setState call
                 const newState: FormState = {
                   ...state,
                   country: countryName,
@@ -342,16 +354,17 @@ export function QuoteForm({
                 };
                 if (country) {
                   newState.currency = country.currency;
-                  // Set phone to country code prefix
-                  newState.phone = country.phoneCode + " ";
+                  // Phone: store ONLY the local number (no country code)
+                  // The country code is shown in the prefix box and added to the doc
+                  newState.phone = "";
                 }
                 setState(newState);
               }}
             >
-              <option value="">{state.language === "fr" ? "Sélectionner un pays" : "Select a country"}</option>
+              <option value="">Select a country</option>
               {COUNTRIES.map((c) => (
                 <option key={c.code} value={c.name}>
-                  {c.name} ({c.code})
+                  {c.flag} {c.name}
                 </option>
               ))}
             </select>
@@ -369,48 +382,57 @@ export function QuoteForm({
             >
               {state.country ? (
                 <>
-                  <option value="">{state.language === "fr" ? "Sélectionner une ville" : "Select a city"}</option>
+                  <option value="">Select a city</option>
                   {(findCountry(state.country)?.cities ?? []).map((city) => (
                     <option key={city} value={city}>{city}</option>
                   ))}
                 </>
               ) : (
-                <option value="">{state.language === "fr" ? "Sélectionnez d'abord un pays" : "Select a country first"}</option>
+                <option value="">Select a country first</option>
               )}
             </select>
           </div>
-          {/* Phone with country code prefix + flag — full width */}
+          {/* Phone with country code prefix + flag — full width
+              The prefix box always shows (empty when no country selected).
+              The input only contains the LOCAL phone number (no country code).
+              The country code is prepended automatically in the document. */}
           <div className="md:col-span-2">
             <label className="k-label" htmlFor="phone">
               {t.phone}
             </label>
             <div className="flex">
-              {state.country && (() => {
-                const c = findCountry(state.country);
-                return c ? (
+              {(() => {
+                const c = state.country ? findCountry(state.country) : null;
+                return (
                   <span
                     className="inline-flex items-center gap-1.5 px-2.5 py-2 bg-[#F3F4F6] border border-[#E5E7EB] border-r-0 text-sm text-[#000028] whitespace-nowrap"
                     style={{ borderRadius: "var(--radius) 0 0 var(--radius)" }}
                   >
-                    <img
-                      src={`https://flagcdn.com/16x12/${c.code.toLowerCase()}.png`}
-                      width={16}
-                      height={12}
-                      alt={c.code}
-                      style={{ display: "block", borderRadius: 1 }}
-                    />
-                    <span className="font-mono text-xs">{c.phoneCode}</span>
+                    {c ? (
+                      <>
+                        <img
+                          src={`https://flagcdn.com/16x12/${c.code.toLowerCase()}.png`}
+                          width={16}
+                          height={12}
+                          alt={c.code}
+                          style={{ display: "block", borderRadius: 1 }}
+                        />
+                        <span className="font-mono text-xs">{c.phoneCode}</span>
+                      </>
+                    ) : (
+                      <span className="font-mono text-xs text-[#9CA3AF]">+—</span>
+                    )}
                   </span>
-                ) : null;
+                );
               })()}
               <input
                 id="phone"
                 type="tel"
                 className="k-input"
-                style={state.country && findCountry(state.country) ? { borderRadius: "0 var(--radius) var(--radius) 0" } : {}}
+                style={{ borderRadius: "0 var(--radius) var(--radius) 0" }}
                 value={state.phone}
                 onChange={(e) => update("phone", e.target.value)}
-                placeholder={state.language === "fr" ? "Numéro de téléphone" : "Phone number"}
+                placeholder="Phone number (without country code)"
               />
             </div>
           </div>

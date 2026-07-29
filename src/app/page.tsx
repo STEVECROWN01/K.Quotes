@@ -35,7 +35,8 @@ export default function Home() {
   const [revertChangesConfirm, setRevertChangesConfirm] = useState(false);
   const [invoiceModalQuote, setInvoiceModalQuote] = useState<QuoteRecord | null>(null);
 
-  const t = UI[formState.language];
+  // UI is always in English; document language is separate (defaults to French)
+  const t = UI["en"];
 
   const payload = formStateToPayload(formState);
 
@@ -329,10 +330,9 @@ export default function Home() {
   );
 
   const confirmGenerateInvoice = useCallback(
-    async (paymentMethod: string) => {
+    async (paymentMethod: string, paymentDate: string) => {
       if (!invoiceModalQuote) return;
       try {
-        const paymentDate = new Date().toISOString().slice(0, 10);
         const res = await fetch(`/api/quotes/${invoiceModalQuote.id}/invoice`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

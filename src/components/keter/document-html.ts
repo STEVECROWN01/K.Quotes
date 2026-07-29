@@ -101,7 +101,11 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
 
   const dateLabel = formatDate(p.date, lang);
   const paymentDateLabel = p.paymentDate ? formatDate(p.paymentDate, lang) : "";
-  const thankYou = THANK_YOU_NOTES[lang][p.service];
+  const thankYou = p.docType === "facture"
+    ? (lang === "fr"
+        ? "La présente facture concerne un accompagnement stratégique en optimisation de CV et repositionnement professionnel exécutif. Nous remercions notre client pour sa confiance."
+        : "This invoice covers strategic CV optimization and executive professional repositioning. We thank our client for their trust.")
+    : THANK_YOU_NOTES[lang][p.service];
   const thankYouPrefix = THANK_YOU_PREFIX[lang];
   const conditions = GENERAL_CONDITIONS[lang];
 
@@ -446,6 +450,24 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   }
   .cb-left .cb-row .lbl { color: #000000; font-weight: 600; }
   .cb-left .cb-row .val { color: #000000; font-weight: 400; }
+  .cb-conditions-list { margin: 0; padding: 0; list-style: none; }
+  .cb-conditions-list li {
+    position: relative;
+    padding-left: 14px;
+    margin-bottom: 4px;
+    font-size: 9pt;
+    color: #1f2937;
+    line-height: 1.5;
+  }
+  .cb-conditions-list li::before {
+    content: "■";
+    color: #000000;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 7pt;
+    line-height: 1.8;
+  }
   .cb-right {
     padding-left: 0;
     border-left: none;
@@ -712,11 +734,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     ${p.docType === "devis" ? `
     <div class="conditions-block ${items.length > 1 ? 'conditions-block-multi' : ''}">
       <div class="cb-left">
-        <div class="cb-title">${t.conditionsBlock}</div>
-        <div class="cb-row"><span class="lbl">${t.conditionsReglement} :</span> <span class="val">${p.paymentConditions}</span></div>
-        <div class="cb-row"><span class="lbl">${t.modeReglement} :</span> <span class="val">${p.paymentMode}</span></div>
-        <div class="cb-row"><span class="lbl">${t.validiteDevis} :</span> <span class="val">${QUOTE_VALIDITY_DAYS} ${lang === "fr" ? "jours" : "days"}</span></div>
-        <div class="cb-row"><span class="lbl">${t.notes} :</span> <span class="val">${t.notesText}</span></div>
+        <div class="cb-title">${t.conditionsHeading}</div>
+        <ul class="cb-conditions-list">
+          ${conditions.map((c) => `<li>${c}</li>`).join("")}
+        </ul>
       </div>
       <div class="cb-right">
         <div class="cb-title">${t.bonPourAccord}</div>
@@ -736,11 +757,12 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         <div class="line-1">${docTitleLabel} ${docNumber}</div>
         <div class="line-2">${t.documentConfidentiel}</div>
       </div>
-      <div class="footer-right">${UI[lang].pageXSurY.replace("{x}", "1").replace("{y}", "2")}</div>
+      <div class="footer-right">${UI[lang].pageXSurY.replace("{x}", "1").replace("{y}", p.docType === "facture" ? "1" : "2")}</div>
     </div>
   </div>
 </div>
 
+${p.docType === "devis" ? `
 <!-- ============ PAGE 2 ============ -->
 <div class="page">
   <div class="watermark"><img src="${logoSrc}" alt="Keter Marketing watermark" /></div>
@@ -775,10 +797,17 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     }
 
     <div class="conditions-section">
-      <div class="section-heading">${t.conditionsHeading}</div>
-      <ul class="conditions-list">
-        ${conditions.map((c) => `<li>${c}</li>`).join("")}
-      </ul>
+      <div class="cb-row" style="font-size:9pt;margin-bottom:3px;line-height:1.5;color:#1f2937;">
+        <span style="color:#000000;font-weight:600;">${t.validiteDevis} :</span>
+        <span style="color:#000000;font-weight:400;"> ${QUOTE_VALIDITY_DAYS} ${lang === "fr" ? "jours" : "days"}</span>
+      </div>
+      <div class="cb-row" style="font-size:9pt;margin-bottom:3px;line-height:1.5;color:#1f2937;">
+        <span style="color:#000000;font-weight:600;">${t.notes} :</span>
+        <span style="color:#000000;font-weight:400;"> ${lang === "fr" ? "Je reste à votre disposition pour toute question complémentaire et vous remercie encore pour votre confiance." : "I remain at your disposal for any further questions and thank you again for your trust."}</span>
+      </div>
+      <div style="margin-top:12mm;text-align:center;font-weight:800;color:#000000;font-size:13pt;letter-spacing:1px;">
+        SHALOM ALEIKHEM
+      </div>
     </div>
   </div>
 
@@ -793,6 +822,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     </div>
   </div>
 </div>
+` : ""}
 
 </body>
 </html>`;
