@@ -600,10 +600,18 @@ export const COUNTRIES: Country[] = [
   },
 ];
 
-// Helper: find country by name or code
+// Helper: find country by name or code (fuzzy matching)
 export function findCountry(query: string): Country | undefined {
+  if (!query) return undefined;
+  const q = query.trim().toLowerCase();
   return COUNTRIES.find(
-    (c) => c.name === query || c.code === query || `${c.name} (${c.code})` === query
+    (c) =>
+      c.name.toLowerCase() === q ||
+      c.code.toLowerCase() === q ||
+      `${c.name} (${c.code})`.toLowerCase() === q ||
+      // Fuzzy: partial match on name
+      c.name.toLowerCase().includes(q) ||
+      q.includes(c.name.toLowerCase())
   );
 }
 

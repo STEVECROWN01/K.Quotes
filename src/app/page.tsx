@@ -39,11 +39,14 @@ export default function Home() {
 
   const payload = formStateToPayload(formState);
 
-  // Persist form state to localStorage whenever it changes
+  // Persist form state to localStorage (debounced to avoid excessive writes)
   useEffect(() => {
-    try {
-      localStorage.setItem("keter_form_state", JSON.stringify(formState));
-    } catch {}
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem("keter_form_state", JSON.stringify(formState));
+      } catch {}
+    }, 500);
+    return () => clearTimeout(timer);
   }, [formState]);
 
   const handleGeneratePdf = useCallback(async () => {
@@ -435,7 +438,7 @@ export default function Home() {
 
       {/* ===== Main 2-column layout ===== */}
       <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 md:px-8 py-6 md:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-6 lg:gap-8">
           {/* Left — form */}
           <div className="space-y-5">
             <div className="flex items-baseline justify-between">

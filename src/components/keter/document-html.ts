@@ -131,14 +131,14 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
         ["Ville :", p.city || "—"],
         ["Pays :", p.country || "—"],
         ["Téléphone :", p.phone || "—"],
-        ["Email :", p.email || "—"],
+        ["Email :", p.email ? `<a href="mailto:${p.email}" style="color:#2563eb;text-decoration:none;font-weight:500;">${p.email}</a>` : "—"],
       ]
     : [
         ["Name :", p.fullName || "—"],
         ["City :", p.city || "—"],
         ["Country :", p.country || "—"],
         ["Phone :", p.phone || "—"],
-        ["Email :", p.email || "—"],
+        ["Email :", p.email ? `<a href="mailto:${p.email}" style="color:#2563eb;text-decoration:none;font-weight:500;">${p.email}</a>` : "—"],
       ];
 
   // Build invoice-only payment block (for facture) — replaces Conditions/Bon pour accord
@@ -164,7 +164,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
 <title>${docTitleLabel} ${docNumber} — ${p.fullName}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
   /* ---- Page setup: A4, zero margin, two pages ---- */
   @page { size: A4; margin: 0; }
@@ -435,7 +435,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
   .cb-left .cb-title, .cb-right .cb-title {
     font-size: 10.5pt;
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     color: #000000;
   }
   .cb-left .cb-row {

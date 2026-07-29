@@ -35,7 +35,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
       setLoading(true);
       setError(null);
       try {
-        const r = await fetch("/api/quotes");
+        const r = await fetch(`/api/quotes?t=${Date.now()}`);
         const d = await r.json();
         if (!cancelled) {
           if (!r.ok) {

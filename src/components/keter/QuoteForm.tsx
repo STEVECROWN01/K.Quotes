@@ -269,8 +269,7 @@ export function QuoteForm({
           <div>
             <label className="k-label" htmlFor="clientNumber">
               {t.clientNumber} *
-            </label>
-            <input
+            </label>            <input
               id="clientNumber"
               type="number"
               min={0}
@@ -323,8 +322,8 @@ export function QuoteForm({
               placeholder={state.language === "fr" ? "Jean Dupont" : "John Doe"}
             />
           </div>
-          {/* Country dropdown (left) + Town dropdown (right) */}
-          <div>
+          {/* Country dropdown — full width */}
+          <div className="md:col-span-2">
             <label className="k-label" htmlFor="country">
               {t.country}
             </label>
@@ -357,7 +356,8 @@ export function QuoteForm({
               ))}
             </select>
           </div>
-          <div>
+          {/* Town dropdown — full width */}
+          <div className="md:col-span-2">
             <label className="k-label" htmlFor="city">
               {t.city}
             </label>
@@ -366,20 +366,21 @@ export function QuoteForm({
               className="k-input"
               value={state.city}
               onChange={(e) => update("city", e.target.value)}
-              disabled={!state.country}
             >
-              <option value="">
-                {state.country
-                  ? (state.language === "fr" ? "Sélectionner une ville" : "Select a city")
-                  : (state.language === "fr" ? "Sélectionnez d'abord un pays" : "Select a country first")}
-              </option>
-              {(findCountry(state.country)?.cities ?? []).map((city) => (
-                <option key={city} value={city}>{city}</option>
-              ))}
+              {state.country ? (
+                <>
+                  <option value="">{state.language === "fr" ? "Sélectionner une ville" : "Select a city"}</option>
+                  {(findCountry(state.country)?.cities ?? []).map((city) => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </>
+              ) : (
+                <option value="">{state.language === "fr" ? "Sélectionnez d'abord un pays" : "Select a country first"}</option>
+              )}
             </select>
           </div>
-          {/* Phone with country code prefix + flag (SVG from CDN) */}
-          <div>
+          {/* Phone with country code prefix + flag — full width */}
+          <div className="md:col-span-2">
             <label className="k-label" htmlFor="phone">
               {t.phone}
             </label>
@@ -413,7 +414,8 @@ export function QuoteForm({
               />
             </div>
           </div>
-          <div>
+          {/* Email — full width */}
+          <div className="md:col-span-2">
             <label className="k-label" htmlFor="email">
               {t.email}
             </label>
