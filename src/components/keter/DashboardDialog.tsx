@@ -140,9 +140,9 @@ export function DashboardDialog({ open, language, onClose }: Props) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB]">
           <div>
-            <div className="k-section-marker">{language === "fr" ? "Tableau de bord" : "Dashboard"}</div>
+            <div className="k-section-marker">{false ? "Tableau de bord" : "Dashboard"}</div>
             <h2 className="font-serif text-xl font-semibold text-[#000028] mt-0.5">
-              {language === "fr" ? "Tableau de bord" : "Dashboard"}
+              {false ? "Tableau de bord" : "Dashboard"}
             </h2>
           </div>
           <button
@@ -161,7 +161,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
             <div className="flex flex-col items-center justify-center h-64 gap-3 text-[#6B7280]">
               <Loader2 className="w-6 h-6 animate-spin" />
               <span className="text-sm">
-                {language === "fr" ? "Chargement…" : "Loading…"}
+                {false ? "Chargement…" : "Loading…"}
               </span>
             </div>
           ) : error ? (
@@ -171,7 +171,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
               </div>
               <div>
                 <p className="font-serif text-base font-semibold text-[#000028] mb-1">
-                  {language === "fr" ? "Configuration requise" : "Configuration required"}
+                  {false ? "Configuration requise" : "Configuration required"}
                 </p>
                 <p className="text-xs text-[#6B7280] max-w-md">{error}</p>
               </div>
@@ -182,7 +182,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
                 <BarChart3 className="w-6 h-6 text-[#6B7280]" />
               </div>
               <p className="font-serif text-base text-[#000028] font-medium">
-                {language === "fr"
+                {false
                   ? "Pas encore de données — créez votre premier devis"
                   : "No data yet — create your first quote"}
               </p>
@@ -193,25 +193,25 @@ export function DashboardDialog({ open, language, onClose }: Props) {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <KpiCard
                   icon={<FileText className="w-4 h-4" />}
-                  label={language === "fr" ? "Devis émis" : "Quotes issued"}
+                  label={false ? "Devis émis" : "Quotes issued"}
                   value={String(stats.totalQuotes)}
                   accent="ink"
                 />
                 <KpiCard
                   icon={<FileCheck className="w-4 h-4" />}
-                  label={language === "fr" ? "Factures émises" : "Invoices issued"}
+                  label={false ? "Factures émises" : "Invoices issued"}
                   value={String(stats.totalInvoices)}
                   accent="gold"
                 />
                 <KpiCard
                   icon={<Euro className="w-4 h-4" />}
-                  label={language === "fr" ? "Revenu encaissé" : "Revenue collected"}
+                  label={false ? "Revenu encaissé" : "Revenue collected"}
                   value={formatCurrency(stats.totalRevenue, language)}
                   accent="green"
                 />
                 <KpiCard
                   icon={<TrendingUp className="w-4 h-4" />}
-                  label={language === "fr" ? "Taux de conversion" : "Conversion rate"}
+                  label={false ? "Taux de conversion" : "Conversion rate"}
                   value={`${stats.conversionRate.toFixed(0)}%`}
                   accent="ink"
                   hint={`${stats.totalInvoices}/${stats.totalQuotes}`}
@@ -222,10 +222,10 @@ export function DashboardDialog({ open, language, onClose }: Props) {
               <div className="k-card">
                 <div className="flex items-baseline justify-between mb-4">
                   <h3 className="font-serif text-base font-semibold text-[#000028]">
-                    {language === "fr" ? "Devis par mois" : "Quotes per month"}
+                    {false ? "Devis par mois" : "Quotes per month"}
                   </h3>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">
-                    6 {language === "fr" ? "derniers mois" : "months"}
+                    6 {false ? "derniers mois" : "months"}
                   </span>
                 </div>
                 <div className="flex items-end justify-between gap-2 md:gap-4 h-32">
@@ -256,7 +256,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
                 {/* Revenue per month */}
                 <div className="k-card">
                   <h3 className="font-serif text-base font-semibold text-[#000028] mb-4">
-                    {language === "fr" ? "Revenu encaissé / mois" : "Revenue / month"}
+                    {false ? "Revenu encaissé / mois" : "Revenue / month"}
                   </h3>
                   <div className="flex items-end justify-between gap-2 md:gap-4 h-32">
                     {stats.monthly.map((m, i) => (
@@ -281,7 +281,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
                   </div>
                   <div className="mt-4 pt-4 border-t border-[#E5E7EB] flex items-baseline justify-between">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">
-                      {language === "fr" ? "Revenu potentiel (devis)" : "Potential revenue (quotes)"}
+                      {false ? "Revenu potentiel (devis)" : "Potential revenue (quotes)"}
                     </span>
                     <span className="font-mono font-semibold text-[#000028]">
                       {formatCurrency(stats.quotesRevenue, language)}
@@ -292,11 +292,11 @@ export function DashboardDialog({ open, language, onClose }: Props) {
                 {/* Top clients */}
                 <div className="k-card">
                   <h3 className="font-serif text-base font-semibold text-[#000028] mb-4">
-                    {language === "fr" ? "Top clients" : "Top clients"}
+                    {false ? "Top clients" : "Top clients"}
                   </h3>
                   {stats.topClients.length === 0 ? (
                     <p className="text-sm text-[#6B7280] italic">
-                      {language === "fr" ? "Aucun client" : "No clients"}
+                      {false ? "Aucun client" : "No clients"}
                     </p>
                   ) : (
                     <ul className="space-y-2">
@@ -315,7 +315,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
                               {formatCurrency(c.total, language)}
                             </div>
                             <div className="text-[10px] text-[#6B7280]">
-                              {c.count} {language === "fr" ? "doc(s)" : "doc(s)"}
+                              {c.count} {false ? "doc(s)" : "doc(s)"}
                             </div>
                           </div>
                         </li>
@@ -331,7 +331,7 @@ export function DashboardDialog({ open, language, onClose }: Props) {
         {/* Footer */}
         <div className="px-5 py-3 border-t border-[#E5E7EB] bg-[#FAFAF9] flex items-center justify-between">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">
-            {quotes.length} {language === "fr" ? "document(s) au total" : "document(s) total"}
+            {quotes.length} {false ? "document(s) au total" : "document(s) total"}
           </span>
           <button onClick={onClose} className="k-btn-secondary !py-2 !px-4 text-xs">
             {t.cancel}

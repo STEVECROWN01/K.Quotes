@@ -211,7 +211,7 @@ export function QuoteForm({
         </div>
         <div className="text-right">
           <div className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">
-            {state.language === "fr" ? "Aperçu" : "Preview"}
+            Preview
           </div>
           <div className="text-sm font-medium text-[#000028] mt-0.5">
             {isInvoice ? t.titleFacture : t.titleDevis}
@@ -253,7 +253,7 @@ export function QuoteForm({
               <button
                 type="button"
                 className="k-radio-card text-center font-medium"
-                data-selected={state.language === "fr"}
+                data-selected={state.docType === "devis"}
                 onClick={() => update("language", "fr")}
               >
                 {t.francais}
@@ -288,7 +288,7 @@ export function QuoteForm({
               className="k-input"
               value={state.clientNumber}
               onChange={(e) => update("clientNumber", e.target.value)}
-              placeholder={state.language === "fr" ? "Ex: 1, 26, 104…" : "e.g. 1, 26, 104…"}
+              placeholder="e.g. 1, 26, 104…"
             />
             <p className="text-[10px] text-[#6B7280] mt-1 font-mono">
               {clientNum > 0 ? (
@@ -302,9 +302,7 @@ export function QuoteForm({
                 </>
               ) : (
                 <span className="italic">
-                  {state.language === "fr"
-                    ? `Entrez le n° client → ${state.docType === "devis" ? "D" : "F"}${year2}XXXXX`
-                    : `Enter client # → ${state.docType === "devis" ? "D" : "F"}${year2}XXXXX`}
+                  {`Enter client # → ${state.docType === "devis" ? "D" : "F"}${year2}XXXXX`}
                 </span>
               )}
             </p>
@@ -331,7 +329,7 @@ export function QuoteForm({
               className="k-input"
               value={state.fullName}
               onChange={(e) => update("fullName", e.target.value)}
-              placeholder={state.language === "fr" ? "Jean Dupont" : "John Doe"}
+              placeholder="John Doe"
             />
           </div>
           {/* Country dropdown — full width, shows flag + name */}
@@ -405,7 +403,7 @@ export function QuoteForm({
                 const c = state.country ? findCountry(state.country) : null;
                 return (
                   <span
-                    className="inline-flex items-center gap-1.5 px-2.5 py-2 bg-[#F3F4F6] border border-[#E5E7EB] border-r-0 text-sm text-[#000028] whitespace-nowrap"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-[#F3F4F6] border border-[#E5E7EB] border-r-0 text-sm text-[#000028] whitespace-nowrap"
                     style={{ borderRadius: "var(--radius) 0 0 var(--radius)" }}
                   >
                     {c ? (
@@ -493,7 +491,7 @@ export function QuoteForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
               <label className="k-label" htmlFor="currency">
-                {state.language === "fr" ? "Devise" : "Currency"}
+                Currency
               </label>
               <select
                 id="currency"
@@ -511,7 +509,7 @@ export function QuoteForm({
             {(state.service === "cv" || state.service === "both") && (
               <div>
                 <label className="k-label" htmlFor="cvQuantity">
-                  {state.language === "fr" ? "Nombre de CV" : "Number of CVs"}
+                  Number of CVs
                 </label>
                 <input
                   id="cvQuantity"
@@ -538,7 +536,7 @@ export function QuoteForm({
             {(state.service === "cv" || state.service === "both") && (
               <div>
                 <label className="k-label" htmlFor="priceCv">
-                  {state.language === "fr" ? "Prix CV" : "CV price"} ({getCurrencySymbol(state.currency)})
+                  CV price ({getCurrencySymbol(state.currency)})
                 </label>
                 <input
                   id="priceCv"
@@ -556,7 +554,7 @@ export function QuoteForm({
               state.service === "both") && (
               <div>
                 <label className="k-label" htmlFor="priceLinkedin">
-                  {state.language === "fr" ? "Prix LinkedIn" : "LinkedIn price"} ({getCurrencySymbol(state.currency)})
+                  LinkedIn price ({getCurrencySymbol(state.currency)})
                 </label>
                 <input
                   id="priceLinkedin"
@@ -572,11 +570,7 @@ export function QuoteForm({
             )}
           </div>
           <p className="text-[11px] text-[#6B7280] italic">
-            {state.language === "fr"
-              ? state.service === "both"
-                ? "Combo : 2 lignes distinctes, quantité 1 chacune."
-                : "Prestation unique : 1 ligne, quantité 1."
-              : state.service === "both"
+            {state.service === "both"
               ? "Combo: 2 separate line items, qty 1 each."
               : "Single service: 1 line item, qty 1."}
           </p>
@@ -652,13 +646,22 @@ export function QuoteForm({
             <label className="k-label" htmlFor="paymentMode">
               {t.paymentMode}
             </label>
-            <input
+            <select
               id="paymentMode"
-              type="text"
               className="k-input"
               value={state.paymentMode}
               onChange={(e) => update("paymentMode", e.target.value)}
-            />
+            >
+              <option value="Virement bancaire">Bank transfer</option>
+              <option value="MTN Mobile Money">MTN Mobile Money</option>
+              <option value="Moov Money">Moov Money</option>
+              <option value="Orange Money">Orange Money</option>
+              <option value="Wave">Wave</option>
+              <option value="Celtiis Cash">Celtiis Cash</option>
+              <option value="M-Pesa">M-Pesa</option>
+              <option value="PayPal">PayPal</option>
+              <option value="Cash">Cash</option>
+            </select>
           </div>
           <div className="md:col-span-2">
             <label className="k-label" htmlFor="paymentConditions">
@@ -747,7 +750,7 @@ export function QuoteForm({
           />
           <Mail className="w-3.5 h-3.5 text-[#6B7280]" />
           <span className="text-xs text-[#000028] font-medium">
-            {state.language === "fr" ? "M'envoyer une copie par email" : "Email me a copy"}
+            Email me a copy
           </span>
         </label>
         <label className="flex items-center gap-2.5 cursor-pointer select-none">
@@ -759,7 +762,7 @@ export function QuoteForm({
           />
           <Save className="w-3.5 h-3.5 text-[#6B7280]" />
           <span className="text-xs text-[#000028] font-medium">
-            {state.language === "fr" ? "Sauvegarder dans Mes devis" : "Save to My Quotes"}
+            Save to My Quotes
           </span>
         </label>
       </div>
@@ -777,12 +780,12 @@ export function QuoteForm({
             {saving ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                {state.language === "fr" ? "Enregistrement..." : "Saving..."}
+                Saving...
               </>
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                {state.language === "fr" ? "Enregistrer les modifications" : "Save changes"}
+                Save changes
               </>
             )}
           </button>
@@ -793,7 +796,7 @@ export function QuoteForm({
             className="k-btn-secondary flex-1"
           >
             <RotateCcw className="w-4 h-4" />
-            {state.language === "fr" ? "Annuler les modifications" : "Revert changes"}
+            Revert changes
           </button>
         </div>
       ) : (
@@ -808,7 +811,7 @@ export function QuoteForm({
             {generating ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                {state.language === "fr" ? "Génération..." : "Generating..."}
+                Generating...
               </>
             ) : (
               <>
@@ -827,7 +830,7 @@ export function QuoteForm({
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {state.language === "fr" ? "Enregistrement..." : "Saving..."}
+                  Saving...
                 </>
               ) : (
                 <>

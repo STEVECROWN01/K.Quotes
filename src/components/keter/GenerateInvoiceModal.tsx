@@ -24,7 +24,7 @@ export function GenerateInvoiceModal({ open, language, quote, onClose, onConfirm
   const country = findCountry(quote.country ?? "");
   const mobilePayments = country?.mobilePayments ?? [];
 
-  const fr = language === "fr";
+  const fr = false;
 
   const handleConfirm = async () => {
     if (!selectedMethod) return;

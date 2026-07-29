@@ -90,26 +90,26 @@ export default function Home() {
       if (formState.emailSelfCopy) {
         if (emailSent) {
           toast.success(
-            formState.language === "fr"
+            false
               ? `PDF généré + copie envoyée par email`
               : `PDF generated + copy emailed`
           );
         } else if (emailError) {
           toast.message(
-            formState.language === "fr"
+            false
               ? `PDF généré — email ignoré (${decodeURIComponent(emailError)})`
               : `PDF generated — email skipped (${decodeURIComponent(emailError)})`
           );
         } else {
           toast.success(
-            formState.language === "fr"
+            false
               ? `PDF généré : ${filename}`
               : `PDF generated: ${filename}`
           );
         }
       } else {
         toast.success(
-          formState.language === "fr"
+          false
             ? `PDF généré : ${filename}`
             : `PDF generated: ${filename}`
         );
@@ -242,19 +242,19 @@ export default function Home() {
       // Show appropriate toast
       if (formState.emailSelfCopy && emailSent) {
         toast.success(
-          formState.language === "fr"
+          false
             ? "Modifications enregistrées + copie envoyée par email"
             : "Changes saved + copy emailed"
         );
       } else if (formState.emailSelfCopy) {
         toast.success(
-          formState.language === "fr"
+          false
             ? "Modifications enregistrées (email non envoyé)"
             : "Changes saved (email not sent)"
         );
       } else {
         toast.success(
-          formState.language === "fr"
+          false
             ? "Modifications enregistrées"
             : "Changes saved"
         );
@@ -276,7 +276,7 @@ export default function Home() {
     setRevertChangesConfirm(false);
     if (originalState) {
       setFormState(originalState);
-      toast.success(formState.language === "fr" ? "Modifications annulées" : "Changes reverted");
+      toast.success(false ? "Modifications annulées" : "Changes reverted");
     }
   }, [originalState, formState.language]);
 
@@ -291,7 +291,7 @@ export default function Home() {
       setEditingId(q.id);
       setMyQuotesOpen(false);
       toast.success(
-        formState.language === "fr"
+        false
           ? `Devis ${q.quoteNumber} chargé`
           : `Quote ${q.quoteNumber} loaded`
       );
@@ -349,7 +349,7 @@ export default function Home() {
         setInvoiceModalQuote(null);
         setMyQuotesOpen(false);
         toast.success(
-          formState.language === "fr"
+          false
             ? `Facture ${invoice.quoteNumber} créée`
             : `Invoice ${invoice.quoteNumber} created`
         );
@@ -376,7 +376,7 @@ export default function Home() {
         setMyQuotesOpen(false);
         setTimeout(() => setMyQuotesOpen(true), 50); // refresh
         toast.success(
-          formState.language === "fr" ? "Supprimé" : "Deleted"
+          false ? "Supprimé" : "Deleted"
         );
       } catch (e: any) {
         toast.error(e.message);
@@ -409,10 +409,10 @@ export default function Home() {
             <button
               onClick={() => setDashboardOpen(true)}
               className="k-btn-secondary !py-2 !px-3 text-xs"
-              title={formState.language === "fr" ? "Tableau de bord" : "Dashboard"}
+              title={false ? "Tableau de bord" : "Dashboard"}
             >
               <BarChart3 className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">{formState.language === "fr" ? "Tableau de bord" : "Dashboard"}</span>
+              <span className="hidden md:inline">{false ? "Tableau de bord" : "Dashboard"}</span>
             </button>
             <button
               onClick={() => setMyQuotesOpen(true)}
@@ -448,10 +448,10 @@ export default function Home() {
                 </div>
                 <h1 className="font-serif text-2xl md:text-3xl font-semibold text-[#000028] mt-0.5">
                   {editingId
-                    ? (formState.language === "fr"
+                    ? (false
                         ? `Modifier le ${formState.docType === "devis" ? "Devis" : "Facture"}`
                         : `Edit ${formState.docType === "devis" ? "Quote" : "Invoice"}`)
-                    : (formState.language === "fr"
+                    : (false
                         ? `Créer un ${formState.docType === "devis" ? "Devis" : "Facture"}`
                         : `Create ${formState.docType === "devis" ? "a Quote" : "an Invoice"}`)}
                 </h1>
@@ -564,13 +564,13 @@ export default function Home() {
       <ConfirmDialog
         open={!!deleteTarget}
         title={
-          formState.language === "fr"
+          false
             ? "Supprimer ce document ?"
             : "Delete this document?"
         }
         message={
           deleteTarget
-            ? formState.language === "fr"
+            ? false
               ? `Êtes-vous sûr de vouloir supprimer "${deleteTarget.quoteNumber} — ${deleteTarget.fullName}" ?${
                   deleteTarget.docType === "facture"
                     ? " Le devis original repassera au statut « saved »."
@@ -583,8 +583,8 @@ export default function Home() {
                 }`
             : ""
         }
-        confirmLabel={formState.language === "fr" ? "Supprimer" : "Delete"}
-        cancelLabel={formState.language === "fr" ? "Annuler" : "Cancel"}
+        confirmLabel={false ? "Supprimer" : "Delete"}
+        cancelLabel={false ? "Annuler" : "Cancel"}
         variant="danger"
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}
@@ -594,12 +594,12 @@ export default function Home() {
       <ConfirmDialog
         open={saveChangesConfirm}
         title={
-          formState.language === "fr"
+          false
             ? "Enregistrer les modifications ?"
             : "Save changes?"
         }
         message={
-          formState.language === "fr"
+          false
             ? `Voulez-vous enregistrer les modifications apportées à ce document ?${
                 formState.emailSelfCopy
                   ? " Une copie du PDF sera envoyée par email."
@@ -611,8 +611,8 @@ export default function Home() {
                   : ""
               }`
         }
-        confirmLabel={formState.language === "fr" ? "Enregistrer" : "Save"}
-        cancelLabel={formState.language === "fr" ? "Annuler" : "Cancel"}
+        confirmLabel={false ? "Enregistrer" : "Save"}
+        cancelLabel={false ? "Annuler" : "Cancel"}
         variant="default"
         onConfirm={performSaveChanges}
         onCancel={() => setSaveChangesConfirm(false)}
@@ -622,17 +622,17 @@ export default function Home() {
       <ConfirmDialog
         open={revertChangesConfirm}
         title={
-          formState.language === "fr"
+          false
             ? "Annuler les modifications ?"
             : "Revert changes?"
         }
         message={
-          formState.language === "fr"
+          false
             ? "Voulez-vous annuler toutes les modifications non enregistrées et revenir à la version précédente ?"
             : "Do you want to discard all unsaved changes and revert to the previous version?"
         }
-        confirmLabel={formState.language === "fr" ? "Annuler les modifications" : "Revert changes"}
-        cancelLabel={formState.language === "fr" ? "Garder les modifications" : "Keep changes"}
+        confirmLabel={false ? "Annuler les modifications" : "Revert changes"}
+        cancelLabel={false ? "Garder les modifications" : "Keep changes"}
         variant="danger"
         onConfirm={performRevertChanges}
         onCancel={() => setRevertChangesConfirm(false)}

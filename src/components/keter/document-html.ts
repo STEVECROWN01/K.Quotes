@@ -156,7 +156,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
           <span class="ipb-label">${t.paymentStatus}</span>
           <span class="ipb-value">${isPaid ? `<span class="paid-stamp">${lang === "fr" ? "PAYÉ" : "PAID"}</span>` : (p.paymentStatus ?? t.paid)}</span>
         </div>
-        <div class="ipb-row"><span class="ipb-label">${t.modePaiement}</span><span class="ipb-value">${p.paymentMode}</span></div>
+        <div class="ipb-row"><span class="ipb-label">${t.modePaiement}</span><span class="ipb-value">💳 ${p.paymentMode}</span></div>
         <div class="ipb-row"><span class="ipb-label">${t.paymentDate}</span><span class="ipb-value">${paymentDateLabel || dateLabel}</span></div>
       </div>`
       : "";
@@ -189,10 +189,10 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     height: 297mm;
     padding: 16mm 16mm 10mm 16mm;
     background: #ffffff;
-    page-break-after: always;
     overflow: hidden;
   }
-  .page:last-child { page-break-after: auto; }
+  .page.page1 { page-break-after: always; }
+  .page.page1.no-next { page-break-after: auto; }
 
   /* ---- Watermark (barely visible) ---- */
   .watermark {
@@ -506,7 +506,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
     font-size: 11pt;
     font-weight: 700;
     color: #000000;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -641,7 +641,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
 <body>
 
 <!-- ============ PAGE 1 ============ -->
-<div class="page">
+<div class="page page1 ${p.docType === "facture" ? "no-next" : ""}">
   <div class="watermark"><img src="${logoSrc}" alt="Keter Marketing watermark" /></div>
 
   <div class="page-content">

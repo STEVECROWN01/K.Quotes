@@ -117,7 +117,7 @@ export function MyQuotesDialog({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={
-                  language === "fr"
+                  false
                     ? "Rechercher par numéro, nom ou email…"
                     : "Search by number, name or email…"
                 }
@@ -136,7 +136,7 @@ export function MyQuotesDialog({
             </div>
             {searchQuery && (
               <div className="mt-2 text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">
-                {filteredQuotes.length} {language === "fr" ? "résultat(s)" : "match(es)"} · {quotes.length} {language === "fr" ? "total" : "total"}
+                {filteredQuotes.length} {false ? "résultat(s)" : "match(es)"} · {quotes.length} {false ? "total" : "total"}
               </div>
             )}
           </div>
@@ -148,7 +148,7 @@ export function MyQuotesDialog({
             <div className="flex flex-col items-center justify-center h-64 gap-3 text-[#6B7280]">
               <Loader2 className="w-6 h-6 animate-spin" />
               <span className="text-sm">
-                {language === "fr" ? "Chargement..." : "Loading..."}
+                {false ? "Chargement..." : "Loading..."}
               </span>
             </div>
           ) : error ? (
@@ -158,7 +158,7 @@ export function MyQuotesDialog({
               </div>
               <div>
                 <p className="font-serif text-base font-semibold text-[#000028] mb-1">
-                  {language === "fr" ? "Configuration requise" : "Configuration required"}
+                  {false ? "Configuration requise" : "Configuration required"}
                 </p>
                 <p className="text-xs text-[#6B7280] max-w-md">{error}</p>
               </div>
@@ -187,7 +187,7 @@ export function MyQuotesDialog({
                 <Search className="w-6 h-6 text-[#6B7280]" />
               </div>
               <p className="font-serif text-base text-[#000028] font-medium">
-                {language === "fr"
+                {false
                   ? "Aucun résultat pour cette recherche"
                   : "No matches for this search"}
               </p>
@@ -195,20 +195,20 @@ export function MyQuotesDialog({
                 onClick={() => setSearchQuery("")}
                 className="k-btn-secondary !py-2 !px-4 text-xs"
               >
-                {language === "fr" ? "Effacer la recherche" : "Clear search"}
+                {false ? "Effacer la recherche" : "Clear search"}
               </button>
             </div>
           ) : (
             <table className="k-table">
               <thead>
                 <tr>
-                  <th>{language === "fr" ? "N°" : "#"}</th>
+                  <th>{false ? "N°" : "#"}</th>
                   <th>{t.fullName}</th>
                   <th>{t.date}</th>
                   <th className="text-right">{t.total}</th>
-                  <th>{language === "fr" ? "Type" : "Type"}</th>
-                  <th>{language === "fr" ? "Statut" : "Status"}</th>
-                  <th className="text-right">{language === "fr" ? "Actions" : "Actions"}</th>
+                  <th>{false ? "Type" : "Type"}</th>
+                  <th>{false ? "Statut" : "Status"}</th>
+                  <th className="text-right">{false ? "Actions" : "Actions"}</th>
                 </tr>
               </thead>
               <tbody>
@@ -300,7 +300,7 @@ export function MyQuotesDialog({
         {/* Footer */}
         <div className="px-5 py-3 border-t border-[#E5E7EB] bg-[#FAFAF9] flex items-center justify-between">
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#6B7280]">
-            {(searchQuery ? filteredQuotes.length : quotes.length)} {language === "fr" ? "devis enregistré(s)" : "saved quote(s)"}
+            {(searchQuery ? filteredQuotes.length : quotes.length)} {false ? "devis enregistré(s)" : "saved quote(s)"}
           </span>
           <button onClick={onClose} className="k-btn-secondary !py-2 !px-4 text-xs">
             {t.cancel}
