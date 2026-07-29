@@ -23,6 +23,7 @@ import {
   buildDocNumber,
 } from "@/lib/i18n";
 import { EMETTEUR, QUOTE_VALIDITY_DAYS } from "@/lib/defaults";
+import { formatPaymentMethodWithLogo } from "@/lib/payment-logos";
 import type { QuoteRecord } from "@/lib/storage";
 
 // A document payload that's easy to pass around (decoupled from QuoteRecord)
@@ -156,7 +157,7 @@ export function renderDocumentHtml(p: DocumentPayload, logoSrc: string = "/keter
           <span class="ipb-label">${t.paymentStatus}</span>
           <span class="ipb-value">${isPaid ? `<span class="paid-stamp">${lang === "fr" ? "PAYÉ" : "PAID"}</span>` : (p.paymentStatus ?? t.paid)}</span>
         </div>
-        <div class="ipb-row"><span class="ipb-label">${t.modePaiement}</span><span class="ipb-value">💳 ${p.paymentMode}</span></div>
+        <div class="ipb-row"><span class="ipb-label">${t.modePaiement}</span><span class="ipb-value">${formatPaymentMethodWithLogo(p.paymentMode)}</span></div>
         <div class="ipb-row"><span class="ipb-label">${t.paymentDate}</span><span class="ipb-value">${paymentDateLabel || dateLabel}</span></div>
       </div>`
       : "";

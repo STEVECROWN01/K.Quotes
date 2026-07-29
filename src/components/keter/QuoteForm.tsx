@@ -653,14 +653,23 @@ export function QuoteForm({
               onChange={(e) => update("paymentMode", e.target.value)}
             >
               <option value="Virement bancaire">Bank transfer</option>
-              <option value="MTN Mobile Money">MTN Mobile Money</option>
-              <option value="Moov Money">Moov Money</option>
-              <option value="Orange Money">Orange Money</option>
-              <option value="Wave">Wave</option>
-              <option value="Celtiis Cash">Celtiis Cash</option>
-              <option value="M-Pesa">M-Pesa</option>
-              <option value="PayPal">PayPal</option>
-              <option value="Cash">Cash</option>
+              {(() => {
+                const country = state.country ? findCountry(state.country) : null;
+                const methods = country?.mobilePayments ?? [];
+                return methods.map((mp) => (
+                  <option key={mp.id} value={mp.name}>{mp.name}</option>
+                ));
+              })()}
+              {!state.country && (
+                <>
+                  <option value="MTN Mobile Money">MTN Mobile Money</option>
+                  <option value="Moov Money">Moov Money</option>
+                  <option value="Orange Money">Orange Money</option>
+                  <option value="Wave">Wave</option>
+                  <option value="M-Pesa">M-Pesa</option>
+                  <option value="PayPal">PayPal</option>
+                </>
+              )}
             </select>
           </div>
           <div className="md:col-span-2">
