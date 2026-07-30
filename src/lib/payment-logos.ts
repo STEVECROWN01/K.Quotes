@@ -1,9 +1,13 @@
 // Payment method logos — SVG content embedded directly as data URIs.
-// No fs/path imports (would break client-side build).
+// No fs/path/Buffer imports — uses btoa() which works in both browser and Node.js.
 // Each logo is a simple branded badge: colored background + white/dark text.
 
 function svgToDataUri(svg: string): string {
-  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+  // btoa works in both browser and Node.js
+  const base64 = typeof btoa !== "undefined"
+    ? btoa(svg)
+    : Buffer.from(svg).toString("base64");
+  return `data:image/svg+xml;base64,${base64}`;
 }
 
 // Pre-built SVG badges for each payment method
