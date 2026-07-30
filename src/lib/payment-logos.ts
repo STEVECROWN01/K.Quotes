@@ -1,27 +1,48 @@
-// Payment method logos — SVG/PNG URLs for each payment provider.
-// Used in the invoice PDF to show the payment method with its real logo.
-// Logos are stored as data URIs (base64-encoded SVGs) for reliability in Puppeteer.
+// Payment method logos — local SVG files embedded as data URIs.
+// Used in the invoice PDF to show the payment method with its branded logo.
+// SVGs are simple branded badges (colored background + white text).
 
-export function getPaymentMethodLogo(methodName: string): string | null {
-  const logos: Record<string, string> = {
-    "MTN Mobile Money": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/MTN_Group_logo.svg/200px-MTN_Group_logo.svg.png",
-    "Moov Money": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Moov_Africa_logo.svg/200px-Moov_Africa_logo.svg.png",
-    "Orange Money": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Orange_logo.svg/120px-Orange_logo.svg.png",
-    "Wave": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Wave_Logo_2022.svg/200px-Wave_Logo_2022.svg.png",
-    "Celtiis Cash": null, // No public logo available
-    "M-Pesa": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/M-PESA_logo.svg/200px-M-PESA_logo.svg.png",
-    "PayPal": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/200px-PayPal.svg.png",
-    "Virement bancaire": null, // Bank transfer — no logo, text only
-    "Cash": null,
-  };
-  return logos[methodName] ?? null;
+import fs from "fs";
+import path from "path";
+
+const logoCache: Record<string, string> = {};
+
+function getLogoDataUri(filename: string): string | null {
+  if (logoCache[filename]) return logoCache[filename];
+  try {
+    const logoPath = path.join(process.cwd(), "public", "payment-logos", filename);
+    const buf = fs.readFileSync(logoPath);
+    const svg = buf.toString("utf-8");
+    const dataUri = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
+    logoCache[filename] = dataUri;
+    return dataUri;
+  } catch {
+    return null;
+  }
 }
 
-// Format the payment method display with logo
+export function getPaymentMethodLogo(methodName: string): string | null {
+  const logoMap: Record<string, string> = {
+    "MTN Mobile Money": "mtn.svg",
+    "Moov Money": "moov.svg",
+    "Orange Money": "orange.svg",
+    "Wave": "wave.svg",
+    "Celtiis Cash": "celtiis.svg",
+    "M-Pesa": "mpesa.svg",
+    "PayPal": "paypal.svg",
+    "Virement bancaire": "bank.svg",
+    "Cash": null,
+  };
+  const filename = logoMap[methodName];
+  if (!filename) return null;
+  return getLogoDataUri(filename);
+}
+
+// Format the payment method display with logo (for PDF HTML)
 export function formatPaymentMethodWithLogo(methodName: string): string {
-  const logoUrl = getPaymentMethodLogo(methodName);
-  if (logoUrl) {
-    return `<img src="${logoUrl}" alt="${methodName}" style="height:14px; vertical-align:middle; margin-right:4px;" />${methodName}`;
+  const logoUri = getPaymentMethodLogo(methodName);
+  if (logoUri) {
+    return `<img src="${logoUri}" alt="${methodName}" style="height:16px; vertical-align:middle; margin-right:6px;" />${methodName}`;
   }
   return methodName;
 }
