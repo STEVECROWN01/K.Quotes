@@ -1,41 +1,25 @@
-// Payment method logos — local SVG files embedded as data URIs.
-// Used in the invoice PDF to show the payment method with its branded logo.
-// SVGs are simple branded badges (colored background + white text).
+// Payment method logos — SVG content embedded directly as data URIs.
+// No fs/path imports (would break client-side build).
+// Each logo is a simple branded badge: colored background + white/dark text.
 
-import fs from "fs";
-import path from "path";
-
-const logoCache: Record<string, string> = {};
-
-function getLogoDataUri(filename: string): string | null {
-  if (logoCache[filename]) return logoCache[filename];
-  try {
-    const logoPath = path.join(process.cwd(), "public", "payment-logos", filename);
-    const buf = fs.readFileSync(logoPath);
-    const svg = buf.toString("utf-8");
-    const dataUri = `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
-    logoCache[filename] = dataUri;
-    return dataUri;
-  } catch {
-    return null;
-  }
+function svgToDataUri(svg: string): string {
+  return `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
 }
 
+// Pre-built SVG badges for each payment method
+const SVG_LOGOS: Record<string, string> = {
+  "MTN Mobile Money": svgToDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="50" height="18" viewBox="0 0 50 18"><rect width="50" height="18" fill="#FFCC00" rx="3"/><text x="25" y="13" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#000" text-anchor="middle">MTN</text></svg>'),
+  "Moov Money": svgToDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="55" height="18" viewBox="0 0 55 18"><rect width="55" height="18" fill="#0066B3" rx="3"/><text x="27" y="13" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle">Moov</text></svg>'),
+  "Orange Money": svgToDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="18" viewBox="0 0 60 18"><rect width="60" height="18" fill="#FF7900" rx="3"/><text x="30" y="13" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle">Orange</text></svg>'),
+  "Wave": svgToDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="50" height="18" viewBox="0 0 50 18"><rect width="50" height="18" fill="#1DC8FF" rx="3"/><text x="25" y="13" font-family="Arial,sans-serif" font-size="10" font-weight="bold" fill="#fff" text-anchor="middle">Wave</text></svg>'),
+  "Celtiis Cash": svgToDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="55" height="18" viewBox="0 0 55 18"><rect width="55" height="18" fill="#00A651" rx="3"/><text x="27" y="13" font-family="Arial,sans-serif" font-size="8" font-weight="bold" fill="#fff" text-anchor="middle">Celtiis</text></svg>'),
+  "M-Pesa": svgToDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="18" viewBox="0 0 60 18"><rect width="60" height="18" fill="#4CAF50" rx="3"/><text x="30" y="13" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle">M-PESA</text></svg>'),
+  "PayPal": svgToDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="60" height="18" viewBox="0 0 60 18"><rect width="60" height="18" fill="#003087" rx="3"/><text x="30" y="13" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="#fff" text-anchor="middle">PayPal</text></svg>'),
+  "Virement bancaire": svgToDataUri('<svg xmlns="http://www.w3.org/2000/svg" width="80" height="18" viewBox="0 0 80 18"><rect width="80" height="18" fill="#374151" rx="3"/><text x="40" y="13" font-family="Arial,sans-serif" font-size="8" font-weight="bold" fill="#fff" text-anchor="middle">Bank Transfer</text></svg>'),
+};
+
 export function getPaymentMethodLogo(methodName: string): string | null {
-  const logoMap: Record<string, string> = {
-    "MTN Mobile Money": "mtn.svg",
-    "Moov Money": "moov.svg",
-    "Orange Money": "orange.svg",
-    "Wave": "wave.svg",
-    "Celtiis Cash": "celtiis.svg",
-    "M-Pesa": "mpesa.svg",
-    "PayPal": "paypal.svg",
-    "Virement bancaire": "bank.svg",
-    "Cash": null,
-  };
-  const filename = logoMap[methodName];
-  if (!filename) return null;
-  return getLogoDataUri(filename);
+  return SVG_LOGOS[methodName] ?? null;
 }
 
 // Format the payment method display with logo (for PDF HTML)
