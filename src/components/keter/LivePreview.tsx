@@ -85,11 +85,11 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
           </div>
         </div>
         <div className="text-[10px] font-mono text-[#6B7280] uppercase tracking-wider">
-          A4 · 2 pages
+          A4 · {payload.docType === "devis" ? "2 pages" : "1 page"}
         </div>
       </div>
 
-      {/* Preview area — TWO SEPARATE page containers with small gray gap */}
+      {/* Preview area — 1 page for invoices, 2 pages for quotes */}
       <div className="flex-1 overflow-auto bg-[#F3F4F6] p-3 md:p-6">
         <div className="flex flex-col items-center gap-2">
           {/* PAGE 1 */}
@@ -101,15 +101,17 @@ export function LivePreview({ payload }: { payload: DocumentPayload }) {
               style={iframeStyle}
             />
           </div>
-          {/* PAGE 2 */}
-          <div style={pageWrapperStyle}>
-            <iframe
-              title="Document preview — Page 2"
-              srcDoc={page2Html}
-              scrolling="no"
-              style={iframeStyle}
-            />
-          </div>
+          {/* PAGE 2 — only for quotes (devis), not invoices (facture) */}
+          {payload.docType === "devis" && (
+            <div style={pageWrapperStyle}>
+              <iframe
+                title="Document preview — Page 2"
+                srcDoc={page2Html}
+                scrolling="no"
+                style={iframeStyle}
+              />
+            </div>
+          )}
         </div>
       </div>
 
