@@ -8,6 +8,7 @@ import {
 } from "@/lib/defaults";
 import { UI, buildDocNumber, quoteToInvoiceNumber, CURRENCY_OPTIONS, getCurrencySymbol } from "@/lib/i18n";
 import { COUNTRIES, findCountry, formatCountryLabel } from "@/lib/countries";
+import { CountrySelect } from "@/components/keter/CountrySelect";
 import type { Language, DocType, ServiceType } from "@/lib/services";
 import type { DocumentPayload } from "./document-html";
 
@@ -332,40 +333,27 @@ export function QuoteForm({
               placeholder="John Doe"
             />
           </div>
-          {/* Country dropdown — full width, shows flag + name */}
+          {/* Country dropdown — custom with flag images */}
           <div className="md:col-span-2">
             <label className="k-label" htmlFor="country">
               {t.country}
             </label>
-            <select
-              id="country"
-              className="k-input"
+            <CountrySelect
               value={state.country}
-              onChange={(e) => {
-                const countryName = e.target.value;
+              onChange={(countryName) => {
                 const country = findCountry(countryName);
-                // Batch all updates in one setState call
                 const newState: FormState = {
                   ...state,
                   country: countryName,
-                  city: "", // reset city when country changes
+                  city: "",
                 };
                 if (country) {
                   newState.currency = country.currency;
-                  // Phone: store ONLY the local number (no country code)
-                  // The country code is shown in the prefix box and added to the doc
                   newState.phone = "";
                 }
                 setState(newState);
               }}
-            >
-              <option value="">Select a country</option>
-              {COUNTRIES.map((c) => (
-                <option key={c.code} value={c.name}>
-                  {c.flag} {c.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           {/* Town dropdown — full width */}
           <div className="md:col-span-2">
